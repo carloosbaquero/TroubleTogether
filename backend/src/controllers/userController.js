@@ -1,9 +1,9 @@
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import User from '../models/user.js'
+import User from '../models/User.js'
 import Session from '../models/session.js'
 
-import { registerValidation, loginValidation, refreshTokenValidation } from './validations/userValidation.js'
+import { registerValidation, loginValidation, refreshTokenValidation, updateProfileValidation, completeProfileValidation } from './validations/userValidation.js'
 
 import { generateTokens, verifyRefreshToken } from '../utils/utils.js'
 
@@ -102,10 +102,12 @@ export const logout = async (req, res) => {
       } else {
         const session = await Session.findOne({ token: req.body.refreshToken })
         if (!session) {
+          console.log('hola')
           return res
             .status(200)
             .json({ error: null, message: 'Logged Out Sucessfully' })
         }
+        console.log(session)
 
         await session.deleteOne()
         res.status(200).json({ error: null, message: 'Logged Out Sucessfully' })
@@ -113,6 +115,74 @@ export const logout = async (req, res) => {
     })
   } catch (err) {
     console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const completeProfile = async (req, res) => {
+  try {
+    completeProfileValidation(req, res).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        try {
+          const user = await User.findById(req.user._id)
+          user.name = req.body.name
+          user.lastName = req.body.lastName
+          user.description = req.body.description
+          user.birthDate = req.body.birthDate
+          user.nationality = req.body.nationality
+          user.languages = req.body.languages
+          user.visitedCountries = req.body.visitedCountries
+
+          const savedUser = await user.save()
+
+          res.status(201).json({
+            error: null,
+            data: savedUser
+          })
+        } catch (error) {
+          console.log(error)
+          res.status(401).json({ error })
+        }
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const updateProfile = async (req, res) => {
+  try {
+    updateProfileValidation(req, res).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        try {
+          const user = await User.findById(req.user._id)
+          user.name = req.body.name ? req.body.name : user.name
+          user.lastName = req.body.lastName ? req.body.lastName : user.lastName
+          user.description = req.body.description ? req.body.description : user.description
+          user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
+          user.nationality = req.body.nationality ? req.body.nationality : user.nationality
+          user.languages = req.body.languages ? req.body.languages : user.languages
+          user.visitedCountries = req.body.visitedCountries ? req.body.visitedCountries : user.visitedCountries
+
+          const savedUser = await user.save()
+
+          res.status(201).json({
+            error: null,
+            data: savedUser
+          })
+        } catch (error) {
+          console.log(error)
+          res.status(401).json({ error })
+        }
+      }
+    })
+  } catch (error) {
+    console.log(error)
     res.status(500).json({ error: 'Internal Server Error' })
   }
 }
