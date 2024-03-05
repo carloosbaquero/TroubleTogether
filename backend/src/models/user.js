@@ -1,6 +1,5 @@
 import mongoose, { Schema } from 'mongoose'
 import countries from '../utils/countries.js'
-import { nativeNames } from '../utils/languages.js'
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -43,33 +42,39 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     required: false
   },
-  nationality: {
+  country: {
     type: String,
-    enum: [...countries],
+    enum: countries,
     required: false
   },
-  residence: {
+  city: {
     type: String,
     required: false,
     max: 30
   },
   languages: [
     {
-      type: String,
-      enum: [...nativeNames]
+      type: Schema.Types.ObjectId,
+      ref: 'SpokenLanguage'
     }
   ],
-  visitedCountries: [
+  visitedCities: [
     {
-      type: String,
-      enum: [...countries]
+      type: Schema.Types.ObjectId,
+      ref: 'VisitedCity'
     }
   ],
   roles: {
     type: [String],
     enum: ['user', 'admin', 'super_admin'],
     default: ['user']
-  }
+  },
+  plannedTravels: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'PlannedTravel'
+    }
+  ]
 },
 { timestamps: true }
 )

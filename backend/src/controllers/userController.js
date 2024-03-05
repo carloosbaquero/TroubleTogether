@@ -119,70 +119,71 @@ export const logout = async (req, res) => {
   }
 }
 
-export const completeProfile = async (req, res) => {
-  try {
-    completeProfileValidation(req, res).then(async (res) => {
-      if (res.statusCode !== 200) {
-        return res
-      } else {
-        try {
-          const user = await User.findById(req.user._id)
-          user.name = req.body.name
-          user.lastName = req.body.lastName
-          user.description = req.body.description
-          user.birthDate = req.body.birthDate
-          user.nationality = req.body.nationality
-          user.languages = req.body.languages
-          user.visitedCountries = req.body.visitedCountries
+// export const completeProfile = async (req, res) => {
+//   try {
+//     completeProfileValidation(req, res).then(async (res) => {
+//       if (res.statusCode !== 200) {
+//         return res
+//       } else {
+//         try {
+//           const user = await User.findById(req.user._id)
+//           user.name = req.body.name
+//           user.lastName = req.body.lastName
+//           user.description = req.body.description
+//           user.birthDate = req.body.birthDate
+//           user.country = req.body.country
+//           user.city = req.body.city
+//           user.languages = req.body.languages
+//           user.visitedCities = req.body.visitedCountries
 
-          const savedUser = await user.save()
+//           const savedUser = await user.save()
 
-          res.status(201).json({
-            error: null,
-            data: savedUser
-          })
-        } catch (error) {
-          console.log(error)
-          res.status(401).json({ error })
-        }
-      }
-    })
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({ error: 'Internal Server Error' })
-  }
-}
+//           res.status(201).json({
+//             error: null,
+//             data: savedUser
+//           })
+//         } catch (error) {
+//           console.log(error)
+//           res.status(401).json({ error })
+//         }
+//       }
+//     })
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({ error: 'Internal Server Error' })
+//   }
+// }
 
-export const updateProfile = async (req, res) => {
-  try {
-    updateProfileValidation(req, res).then(async (res) => {
-      if (res.statusCode !== 200) {
-        return res
-      } else {
-        try {
-          const user = await User.findById(req.user._id)
-          user.name = req.body.name ? req.body.name : user.name
-          user.lastName = req.body.lastName ? req.body.lastName : user.lastName
-          user.description = req.body.description ? req.body.description : user.description
-          user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
-          user.nationality = req.body.nationality ? req.body.nationality : user.nationality
-          user.languages = req.body.languages ? req.body.languages : user.languages
-          user.visitedCountries = req.body.visitedCountries ? req.body.visitedCountries : user.visitedCountries
+// export const updateProfile = async (req, res) => {
+//   try {
+//     updateProfileValidation(req, res).then(async (res) => {
+//       if (res.statusCode !== 200) {
+//         return res
+//       } else {
+//         try {
+//           const user = await User.findById(req.user._id)
+//           user.name = req.body.name ? req.body.name : user.name
+//           user.lastName = req.body.lastName ? req.body.lastName : user.lastName
+//           user.description = req.body.description ? req.body.description : user.description
+//           user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
+//           user.nationality = req.body.nationality ? req.body.nationality : user.nationality
+//           user.languages = req.body.languages ? req.body.languages : user.languages
+//           user.visitedCountries = req.body.visitedCountries ? req.body.visitedCountries : user.visitedCountries
 
-          const savedUser = await user.save()
+//           const savedUser = await user.save()
 
-          res.status(201).json({
-            error: null,
-            data: savedUser
-          })
-        } catch (error) {
-          console.log(error)
-          res.status(401).json({ error })
-        }
-      }
-    })
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({ error: 'Internal Server Error' })
-  }
-}
+//           res.status(201).json({
+//             error: null,
+//             data: savedUser
+//           })
+//         } catch (error) {
+//           console.log(error)
+//           res.status(401).json({ error })
+//         }
+//       }
+//     })
+//   } catch (error) {
+//     console.log(error)
+//     res.status(500).json({ error: 'Internal Server Error' })
+//   }
+// }
