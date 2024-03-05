@@ -13,18 +13,6 @@ const suggestionSchema = new Schema({
     type: String,
     max: 550
   },
-  likes: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
-  dislikes: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
-    }
-  ],
   approved: {
     type: Boolean,
     default: false
@@ -32,7 +20,13 @@ const suggestionSchema = new Schema({
   rejected: {
     type: Boolean,
     default: false
-  }
+  },
+  approvations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'ApprovationSugestion'
+    }
+  ]
 },
 { timestamps: true })
 
