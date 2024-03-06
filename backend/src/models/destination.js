@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import countries from '../utils/countries'
+import countries from '../utils/countries.js'
 const Schema = mongoose.Schema
 
 const DestinationSchema = new Schema({
