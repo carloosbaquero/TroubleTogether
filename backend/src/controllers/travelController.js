@@ -56,12 +56,17 @@ export const createTravel = async (req, res) => {
 }
 
 export const getTravels = async (req, res) => {
+  const now = new Date()
+  const twoYearsLater = new Date(now)
+  twoYearsLater.setFullYear(now.getFullYear() + 2)
   try {
     const page = parseInt(req.query.page) - 1 || 0
     const limit = 10
     const search = req.query.search || ''
     let sort = req.query.sort || 'startDate'
     let country = req.query.country || 'All'
+    const start = req.query.startDate || now
+    const end = req.query.endDate || twoYearsLater
 
     country === 'All'
       ? (country = [...countries])
@@ -90,7 +95,8 @@ export const getTravels = async (req, res) => {
     const travels = await PlannedTravel.find({
       destination: { $in: listDestinations },
       state: 'Planning',
-      startDate: { $gte: new Date() },
+      startDate: { $gte: start },
+      endDate: { $lte: end },
       $expr: { $lt: [{ $size: '$atendees' }, '$maxAtendees'] }
     })
       .sort(sortBy)
