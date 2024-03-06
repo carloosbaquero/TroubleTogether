@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import Session from '../models/session.js'
 
-import { registerValidation, loginValidation, refreshTokenValidation, updateProfileValidation, completeProfileValidation } from './validations/userValidation.js'
+import { registerValidation, loginValidation, refreshTokenValidation } from './validations/userValidation.js'
 
 import { generateTokens, verifyRefreshToken } from '../utils/utils.js'
 

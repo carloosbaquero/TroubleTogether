@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, getNewAccessToken, logout, updateProfile, completeProfile } from '../controllers/userController.js'
+import { register, login, getNewAccessToken, logout } from '../controllers/userController.js'
 import { isLogged, roleCheck } from '../middlewares/authMiddlewares.js'
 
 const userRoutes = express.Router()
@@ -16,11 +16,11 @@ userRoutes.route('/refresh')
 userRoutes.route('/logout')
   .delete(logout)
 
-userRoutes.route('/update')
-  .put(isLogged, updateProfile)
+// userRoutes.route('/update')
+//   .put(isLogged, updateProfile)
 
-userRoutes.route('/complete')
-  .put(isLogged, completeProfile)
+// userRoutes.route('/complete')
+//   .put(isLogged, completeProfile)
 
 // Esto es para testear los middleware
 userRoutes.get('/details', isLogged, roleCheck(['user']), (req, res) => {
