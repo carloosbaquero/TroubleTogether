@@ -1,5 +1,6 @@
 import Destination from '../models/destination.js'
 import PlannedTravel from '../models/plannedTravel.js'
+import countries from '../utils/countries.js'
 import { createTravelValidation } from './validations/travelValidation.js'
 
 export const createTravel = async (req, res) => {
@@ -48,6 +49,65 @@ export const createTravel = async (req, res) => {
         res.status(401).json({ error })
       }
     })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const getTravels = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) - 1 || 0
+    const limit = 10
+    const search = req.query.search || ''
+    let sort = req.query.sort || 'startDate'
+    let country = req.query.country || 'All'
+
+    country === 'All'
+      ? (country = [...countries])
+      : (country = req.query.country.split(','))
+    req.query.sort ? (sort = req.query.sort.split(',')) : (sort = [sort])
+
+    const sortBy = {}
+    if (sort[1]) {
+      sortBy[sort[0]] = sort[1]
+    } else {
+      sortBy[sort[0]] = 'asc'
+    }
+
+    const removeAccents = (str) => {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    }
+
+    const searchNoAccents = removeAccents(search)
+
+    const destinations = await Destination.find({ city: { $regex: searchNoAccents, $options: 'i' } })
+      .where('country')
+      .in([...country])
+
+    const listDestinations = destinations.map(destination => destination._id)
+
+    const travels = await PlannedTravel.find({
+      destination: { $in: listDestinations },
+      state: 'Planning',
+      startDate: { $gte: new Date() },
+      $expr: { $lt: [{ $size: '$atendees' }, '$maxAtendees'] }
+    })
+      .sort(sortBy)
+      .skip(page * limit)
+      .limit(limit)
+
+    const total = travels.length
+
+    const response = {
+      error: null,
+      total,
+      page: page + 1,
+      limit,
+      travels
+    }
+
+    res.status(200).json(response)
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })

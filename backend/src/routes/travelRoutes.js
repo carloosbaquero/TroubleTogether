@@ -1,10 +1,11 @@
 import express from 'express'
-import { createTravel, getTravelDashboard, getTravelInfo } from '../controllers/travelController.js'
+import { createTravel, getTravelDashboard, getTravelInfo, getTravels } from '../controllers/travelController.js'
 import { isLogged } from '../middlewares/authMiddlewares.js'
 
 const travelRoutes = express.Router()
 
 travelRoutes.route('/travel')
+  .get(getTravels)
   .post(isLogged, createTravel)
 
 travelRoutes.route('/info/:id')
