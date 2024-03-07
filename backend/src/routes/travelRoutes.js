@@ -1,5 +1,5 @@
 import express from 'express'
-import { createTravel, getTravelDashboard, getTravelInfo, getTravels } from '../controllers/travelController.js'
+import { createTravel, getTravelDashboard, getTravelInfo, getTravels, updateTravel } from '../controllers/travelController.js'
 import { isLogged } from '../middlewares/authMiddlewares.js'
 
 const travelRoutes = express.Router()
@@ -13,5 +13,6 @@ travelRoutes.route('/info/:id')
 
 travelRoutes.route('/dashboard/:id')
   .get(isLogged, getTravelDashboard)
+  .put(isLogged, updateTravel)
 
 export default travelRoutes

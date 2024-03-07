@@ -1,7 +1,7 @@
 import Destination from '../models/destination.js'
 import PlannedTravel from '../models/plannedTravel.js'
 import countries from '../utils/countries.js'
-import { createTravelValidation } from './validations/travelValidation.js'
+import { createTravelValidation, updateTravelValidation } from './validations/travelValidation.js'
 
 export const createTravel = async (req, res) => {
   try {
@@ -141,14 +141,51 @@ export const getTravelDashboard = async (req, res) => {
     const travel = await PlannedTravel.findById(req.params.id)
     const userId = req.user._id
 
-    console.log(userId)
-    console.log(travel)
-
     if (travel.organizerId.toString() === userId || travel.atendees.some(atendee => atendee.toString() === userId)) {
       res.status(200).json(travel)
     } else {
       res.status(403).json({ error: 'Forbidden' })
     }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const updateTravel = (req, res) => {
+  try {
+    const userId = req.user._id
+    const travelId = req.params.id
+
+    updateTravelValidation(req, res).then(async (res) => {
+      try {
+        if (res.statusCode !== 200) {
+          return res
+        } else {
+          const travel = await PlannedTravel.findById(travelId)
+          if (travel.organizerId.toString() === userId) {
+            travel.name = req.body.name ? req.body.name : travel.name
+            travel.description = req.body.description ? req.body.description : travel.description
+            travel.startDate = req.body.startDate ? req.body.startDate : travel.startDate
+            travel.endDate = req.body.endDate ? req.body.endDate : travel.endDate
+            travel.maxAtendees = req.body.maxAtendees ? req.body.maxAtendees : travel.maxAtendees
+            travel.minAtendees = req.body.minAtendees ? req.body.minAtendees : travel.minAtendees
+            travel.state = req.body.state ? req.body.state : travel.state
+
+            const savedTravel = await travel.save()
+            res.status(200).json({
+              error: null,
+              data: savedTravel
+            })
+          } else {
+            res.status(403).json({ error: 'Forbidden' })
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        res.status(404).json({ error: 'Page not found' })
+      }
+    })
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })
