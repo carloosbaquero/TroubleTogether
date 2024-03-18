@@ -23,5 +23,5 @@ jobs:
 
     - name: Run tests
       env:
-        MONGO_HOST: ${{ secrets.MONGO_HOST }}
+        MONGO_HOST: "${{ secrets.MONGO_HOST }}"
       run: npm test --prefix ./backend
