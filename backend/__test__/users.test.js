@@ -3,6 +3,14 @@ import mongoose from 'mongoose'
 import request from 'supertest'
 import app from '../src/server.js'
 import User from '../src/models/User.js'
+import Session from '../src/models/session.js'
+
+let refreshToken
+
+beforeAll(async () => {
+  await mongoose.connect(process.env.MONGO_HOST)
+  await mongoose.connection.dropDatabase()
+})
 
 beforeEach(async () => {
   await mongoose.connect(process.env.MONGO_HOST)
@@ -100,5 +108,70 @@ describe('POST /api/users/register', () => {
       password: 'PassW123456'
     }))
     expect(res.statusCode).toBe(401)
+  })
+})
+
+describe('POST /api/users/login', () => {
+  it('should not login with other password', async () => {
+    const res = (await request(app).post('/api/users/login').send({
+      email: 'testemail@gmail.com',
+      password: 'PassW1'
+    }))
+    expect(res.statusCode).toBe(400)
+  })
+})
+
+describe('POST /api/users/login', () => {
+  it('an unexistent user should not login', async () => {
+    const res = (await request(app).post('/api/users/login').send({
+      email: 'testail@gmail.com',
+      password: 'PassW123456'
+    }))
+    expect(res.statusCode).toBe(401)
+  })
+})
+
+describe('POST /api/users/login', () => {
+  it('should login', async () => {
+    const res = (await request(app).post('/api/users/login').send({
+      email: 'testemail@gmail.com',
+      password: 'PassW123456'
+    }))
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.accessToken).toBeTruthy()
+    expect(res.body.data.refreshToken).toBeTruthy()
+    refreshToken = res.body.data.refreshToken
+    const session = await Session.findOne({ token: refreshToken })
+    expect(session).toBeTruthy()
+  })
+})
+
+describe('POST /api/users/refresh', () => {
+  it('should not refresh token with invalid refreshtoken', async () => {
+    const res = (await request(app).post('/api/users/refresh').send({
+      refreshToken: 'yuvyuvbuhcaubvbyvyuve'
+    }))
+    expect(res.statusCode).toBe(400)
+  })
+})
+
+describe('POST /api/users/refresh', () => {
+  it('should refresh token', async () => {
+    const res = (await request(app).post('/api/users/refresh').send({
+      refreshToken
+    }))
+    expect(res.statusCode).toBe(200)
+    expect(res.body.data.accessToken).toBeTruthy()
+  })
+})
+
+describe('DELETE /api/users/logout', () => {
+  it('should logout', async () => {
+    const res = (await request(app).delete('/api/users/logout').send({
+      refreshToken
+    }))
+    expect(res.statusCode).toBe(200)
+    const session = await Session.findOne({ token: refreshToken })
+    expect(session).toBeFalsy()
   })
 })
