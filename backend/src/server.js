@@ -20,3 +20,5 @@ app.use('/api/travels', travelRoutes)
 app.listen(config.PORT, config.HOST, function () {
   console.log(`App listening on http://${config.HOST}:${config.PORT}`)
 })
+
+export default app
