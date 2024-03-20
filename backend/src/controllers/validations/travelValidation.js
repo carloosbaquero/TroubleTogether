@@ -1,20 +1,19 @@
 import Joi from '@hapi/joi'
 import countries from '../../utils/countries.js'
+import Destination from '../../models/destination.js'
 
 export const createTravelValidation = async (req, res) => {
   const destinationSchema = Joi.object({
     city: Joi.string().max(30).required().label('City'),
     country: Joi.string().valid(...countries).required().label('Country'),
     startDest: Joi.date().min('now').required().label('Start Destination'),
-    endDest: Joi.date()
-      .min(Joi.ref('startDest'))
-      .required()
-      .label('End Destination')
+    endDest: Joi.date().min(Joi.ref('startDest')).required().label('End Destination'),
+    hotel: Joi.string().max(50).label('Hotel')
   })
 
   const travelSchema = Joi.object({
     // organizerId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required().label('OrganizerId'),
-    name: Joi.string().min(6).max(60).required().label('Name'),
+    name: Joi.string().min(3).max(60).required().label('Name'),
     description: Joi.string().max(1000).required().label('Description'),
     destinations: Joi.array().items(destinationSchema).label('Destination'),
     startDate: Joi.date().min('now').required().label('Start Date'),
@@ -37,17 +36,38 @@ export const createTravelValidation = async (req, res) => {
     )
   }
 
-  if (!error && !atendeesError) {
+  const datesError = req.body.destinations.some(x => (x.startDest < req.body.startDate) || (x.endDest > req.body.endDate))
+  if (datesError) {
+    return res.status(400).json(
+      { error: 'Dates on a destination must be inside the dates of the travel' }
+    )
+  }
+
+  const destinations = req.body.destinations || []
+  const datesOverlapError = destinations.some((destination, index) => {
+    const restOfDestinations = destinations.slice(index + 1)
+    return restOfDestinations.some(otherDestination => {
+      const startDateOverlap = (destination.startDest >= otherDestination.startDest && destination.startDest < otherDestination.endDest)
+      const endDateOverlap = (destination.endDest > otherDestination.startDest && destination.endDest <= otherDestination.endDest)
+      return startDateOverlap || endDateOverlap
+    })
+  })
+
+  if (datesOverlapError) {
+    return res.status(400).json({ error: 'Destination dates overlap with other destinations' })
+  }
+
+  if (!error && !atendeesError && !datesOverlapError) {
     return res.status(200)
   }
 }
 
-export const updateTravelValidation = async (req, res) => {
+export const updateTravelValidation = async (req, res, travel) => {
   const travelSchema = Joi.object({
-    name: Joi.string().min(6).max(60).label('Name'),
+    name: Joi.string().min(3).max(60).label('Name'),
     description: Joi.string().max(1000).label('Description'),
     startDate: Joi.date().min('now').label('Start Date'),
-    endDate: Joi.date().min(Joi.ref('startDate')).label('End Date'),
+    endDate: Joi.date().min('now').label('End Date'),
     maxAtendees: Joi.number().min(2).max(30).label('Maximun Atendees'),
     minAtendees: Joi.number().min(2).max(30).label('Minimum Atendees'),
     state: Joi.string().valid('Planning', 'Planned', 'In Progress', 'Completed').label('State')
@@ -60,14 +80,114 @@ export const updateTravelValidation = async (req, res) => {
     )
   }
 
-  const atendeesError = req.body.minAtendees > req.body.maxAtendees
+  const minAtendees = req.body.minAtendees ? req.body.minAtendees : travel.minAtendees
+  const maxAtendees = req.body.maxAtendees ? req.body.maxAtendees : travel.maxAtendees
+
+  const atendeesError = minAtendees > maxAtendees
   if (atendeesError) {
     return res.status(400).json(
       { error: 'Minimum atendees must be lower or equal than maximum atendees' }
     )
   }
 
-  if (!error && !atendeesError) {
+  const startDate = req.body.startDate ? new Date(req.body.startDate) : travel.startDate
+  const endDate = req.body.endDate ? new Date(req.body.endDate) : travel.endDate
+
+  const datesDestError = travel.destination.some(dest =>
+    dest.startDate < startDate || dest.endDate > endDate
+  )
+  if (datesDestError) {
+    return res.status(400).json({ error: 'These dates make some destinations outside the range' })
+  }
+  if (!error && !atendeesError && !datesDestError) {
+    return res.status(200)
+  }
+}
+
+export const updateDestinationValidation = async (req, res, travel) => {
+  const destinationSchema = Joi.object({
+    city: Joi.string().max(30).label('City'),
+    country: Joi.string().valid(...countries).label('Country'),
+    startDate: Joi.date().min('now').label('Start Destination'),
+    endDate: Joi.date().min('now').label('End Destination'),
+    hotel: Joi.string().max(50).label('Hotel')
+  })
+
+  const { error } = destinationSchema.validate(req.body)
+  if (error) {
+    return res.status(400).json(
+      { error: error.details[0].message }
+    )
+  }
+
+  const dest = await Destination.findById(req.params.destId)
+
+  const startDate = req.body.startDate ? new Date(req.body.startDate) : dest.startDate
+  const endDate = req.body.endDate ? new Date(req.body.endDate) : dest.endDate
+
+  const datesError = travel.startDate > startDate || travel.endDate < endDate
+
+  if (datesError) {
+    return res.status(400).json(
+      { error: 'Dates on a destination must be inside the dates of the travel' }
+    )
+  }
+
+  const datesOverlapError = travel.destination
+    .filter(destination => destination._id.toString() !== req.params.destId)
+    .some(destination => {
+      const startDateOverlap = (startDate >= destination.startDate && startDate < destination.endDate)
+      const endDateOverlap = (endDate > destination.startDate && endDate <= destination.endDate)
+      return (startDateOverlap || endDateOverlap)
+    })
+
+  if (datesOverlapError) {
+    return res.status(400).json({ error: 'Destination dates overlap with existing destinations' })
+  }
+
+  if (!error && !datesError && !datesOverlapError) {
+    return res.status(200)
+  }
+}
+
+export const createDestinationValidation = async (req, res, travel) => {
+  const destinationSchema = Joi.object({
+    city: Joi.string().max(30).required().label('City'),
+    country: Joi.string().valid(...countries).required().label('Country'),
+    startDate: Joi.date().min('now').required().label('Start Destination'),
+    endDate: Joi.date().min(Joi.ref('startDate')).required().label('End Destination'),
+    hotel: Joi.string().max(50).label('Hotel')
+  })
+
+  const { error } = destinationSchema.validate(req.body)
+  if (error) {
+    return res.status(400).json(
+      { error: error.details[0].message }
+    )
+  }
+
+  const startDate = new Date(req.body.startDate)
+  const endDate = new Date(req.body.endDate)
+
+  const datesError = travel.startDate > startDate || travel.endDate < endDate
+
+  if (datesError) {
+    return res.status(400).json(
+      { error: 'Dates on a destination must be inside the dates of the travel' }
+    )
+  }
+
+  const datesOverlapError = travel.destination.some(destination => {
+    const startDateOverlap = (startDate >= destination.startDate && startDate < destination.endDate)
+    const endDateOverlap = (endDate > destination.startDate && endDate <= destination.endDate)
+    return startDateOverlap || endDateOverlap
+  })
+
+  if (datesOverlapError) {
+    return res.status(400).json({ error: 'Destination dates overlap with existing destinations' })
+  }
+
+  if (!error && !datesError && !datesOverlapError) {
     return res.status(200)
   }
 }

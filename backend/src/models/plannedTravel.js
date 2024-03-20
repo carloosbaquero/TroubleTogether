@@ -1,4 +1,9 @@
 import mongoose from 'mongoose'
+import Destination from './destination.js'
+import Suggestion from './suggestion.js'
+import DailyItinerary from './dailyItinerary.js'
+import Request from './request.js'
+
 const Schema = mongoose.Schema
 
 const PlannedTravelSchema = new Schema({
@@ -10,7 +15,7 @@ const PlannedTravelSchema = new Schema({
   name: {
     type: String,
     required: true,
-    min: 6,
+    min: 3,
     max: 60
   },
   description: {
@@ -65,9 +70,65 @@ const PlannedTravelSchema = new Schema({
     type: String,
     enum: ['Planning', 'Planned', 'In Progress', 'Completed'],
     default: 'Planning'
-  }
+  },
+  requests: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Request'
+    }
+  ]
 },
 { timestamps: true }
 )
+
+PlannedTravelSchema.pre('save', async function (next) {
+  try {
+    const destinationPromises = this.destination.map(async (destinationId) => {
+      return await Destination.findById(destinationId)
+    })
+    this.destination = await Promise.all(destinationPromises)
+    this.destination.sort((a, b) => a.startDate - b.startDate)
+
+    next()
+  } catch (error) {
+    next(error)
+  }
+})
+
+PlannedTravelSchema.pre('deleteOne', { document: true, query: false }, async function (next) {
+  try {
+    if (this.destination?.length > 0) {
+      const destinationPromises = this.destination.map(async (destinationId) => {
+        return await Destination.findByIdAndDelete(destinationId)
+      })
+      await Promise.all(destinationPromises)
+    }
+
+    if (this.suggestions?.length > 0) {
+      const suggestionPromises = this.suggestions.map(async (suggestionId) => {
+        return await Suggestion.findByIdAndDelete(suggestionId)
+      })
+      await Promise.all(suggestionPromises)
+    }
+
+    if (this.itinerary?.length > 0) {
+      const itineraryPromises = this.itinerary.map(async (itineraryId) => {
+        return await DailyItinerary.findByIdAndDelete(itineraryId)
+      })
+      await Promise.all(itineraryPromises)
+    }
+
+    if (this.requests?.length > 0) {
+      const requestsPromises = this.requests.map(async (requestId) => {
+        return await Request.findByIdAndDelete(requestId)
+      })
+      await Promise.all(requestsPromises)
+    }
+
+    next()
+  } catch (error) {
+    next(error)
+  }
+})
 
 export default mongoose.model('PlannedTravel', PlannedTravelSchema)

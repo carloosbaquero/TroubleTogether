@@ -14,7 +14,8 @@ const DestinationSchema = new Schema({
     required: true
   },
   hotel: {
-    type: String
+    type: String,
+    max: 50
   },
   startDate: {
     type: Date,

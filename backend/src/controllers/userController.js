@@ -102,12 +102,10 @@ export const logout = async (req, res) => {
       } else {
         const session = await Session.findOne({ token: req.body.refreshToken })
         if (!session) {
-          console.log('hola')
           return res
             .status(200)
             .json({ error: null, message: 'Logged Out Sucessfully' })
         }
-        console.log(session)
 
         await session.deleteOne()
         res.status(200).json({ error: null, message: 'Logged Out Sucessfully' })

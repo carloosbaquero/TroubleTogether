@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import PlannedTravel from '../models/plannedTravel'
 
 export const isLogged = async (req, res, next) => {
   let token = req.header('Authorization')
@@ -40,5 +41,84 @@ export const roleCheck = (roles) => {
     } else {
       res.status(403).json({ error: 'You are not authorized' })
     }
+  }
+}
+
+export const isOrganizer = async (req, res, next) => {
+  try {
+    const userId = req.user._id
+    const travel = await PlannedTravel.findById(req.params.id)
+
+    if (!travel) {
+      return res.status(404).json({ error: 'Travel not found' })
+    }
+
+    if (travel.organizerId.toString() === userId) {
+      next()
+    } else {
+      res.status(403).json({ error: 'Forbidden' })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const isParticipant = async (req, res, next) => {
+  try {
+    const userId = req.user._id
+    const travel = await PlannedTravel.findById(req.params.id)
+
+    if (!travel) {
+      return res.status(404).json({ error: 'Travel not found' })
+    }
+
+    if (travel.organizerId.toString() === userId || travel.atendees.some(atendee => atendee.toString() === userId)) {
+      next()
+    } else {
+      res.status(403).json({ error: 'Forbidden' })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const isNotParticipant = async (req, res, next) => {
+  try {
+    const userId = req.user._id
+    const travel = await PlannedTravel.findById(req.params.id)
+
+    if (!travel) {
+      return res.status(404).json({ error: 'Travel not found' })
+    }
+
+    if (!(travel.organizerId.toString() === userId || travel.atendees.some(atendee => atendee.toString() === userId))) {
+      next()
+    } else {
+      res.status(403).json({ error: 'Forbidden' })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const isTravelPlanningAndNotFull = async (req, res, next) => {
+  try {
+    const travel = await PlannedTravel.findById(req.params.id)
+
+    if (!travel) {
+      return res.status(404).json({ error: 'Travel not found' })
+    }
+
+    if (travel.state === 'Planning' && travel.maxAtendees > travel.atendees.length) {
+      next()
+    } else {
+      res.status(403).json({ error: 'Forbidden' })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
   }
 }

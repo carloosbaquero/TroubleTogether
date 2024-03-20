@@ -5,15 +5,16 @@ const Schema = mongoose.Schema
 const RequestSchema = new Schema({
   approved: {
     type: Boolean,
-    required: true
+    default: false
   },
   rejected: {
     type: Boolean,
-    required: true
+    default: false
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    unique: true
   }
 })
 
