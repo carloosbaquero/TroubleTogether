@@ -6,6 +6,10 @@
   "main": "src/server.js",
   "scripts": {
     "test": "set NODE_ENV=test&&cross-env NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --runInBand --forceExit",
+    "test:users": "npm test users",
+    "test:plannedTravel": "npm test plannedTravel",
+    "test:request": "npm test request",
+    "test:all": "npm run test:plannedTravel && npm run test:users && npm run test:request",
     "dev": "set NODE_ENV=development&& nodemon src/server.js",
     "prod": "set NODE_ENV=production&& nodemon src/server.js"
   },

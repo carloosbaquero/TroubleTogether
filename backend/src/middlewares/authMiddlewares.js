@@ -56,7 +56,7 @@ export const isOrganizer = async (req, res, next) => {
     if (travel.organizerId.toString() === userId) {
       next()
     } else {
-      res.status(403).json({ error: 'Forbidden' })
+      return res.status(403).json({ error: 'Forbidden' })
     }
   } catch (err) {
     console.log(err)
@@ -76,7 +76,7 @@ export const isParticipant = async (req, res, next) => {
     if (travel.organizerId.toString() === userId || travel.atendees.some(atendee => atendee.toString() === userId)) {
       next()
     } else {
-      res.status(403).json({ error: 'Forbidden' })
+      return res.status(403).json({ error: 'Forbidden' })
     }
   } catch (err) {
     console.log(err)
@@ -96,7 +96,7 @@ export const isNotParticipant = async (req, res, next) => {
     if (!(travel.organizerId.toString() === userId || travel.atendees.some(atendee => atendee.toString() === userId))) {
       next()
     } else {
-      res.status(403).json({ error: 'Forbidden' })
+      return res.status(403).json({ error: 'Forbidden' })
     }
   } catch (err) {
     console.log(err)
@@ -112,10 +112,10 @@ export const isTravelPlanningAndNotFull = async (req, res, next) => {
       return res.status(404).json({ error: 'Travel not found' })
     }
 
-    if (travel.state === 'Planning' && travel.maxAtendees > travel.atendees.length) {
-      next()
+    if (travel.state !== 'Planning' || travel.maxAtendees <= travel.atendees.length + 1) {
+      return res.status(403).json({ error: 'Forbidden' })
     } else {
-      res.status(403).json({ error: 'Forbidden' })
+      next()
     }
   } catch (err) {
     console.log(err)

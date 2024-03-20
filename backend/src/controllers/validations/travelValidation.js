@@ -36,11 +36,13 @@ export const createTravelValidation = async (req, res) => {
     )
   }
 
-  const datesError = req.body.destinations.some(x => (x.startDest < req.body.startDate) || (x.endDest > req.body.endDate))
-  if (datesError) {
-    return res.status(400).json(
-      { error: 'Dates on a destination must be inside the dates of the travel' }
-    )
+  if (req.body.destinations) {
+    const datesError = req.body.destinations.some(x => (x.startDest < req.body.startDate) || (x.endDest > req.body.endDate))
+    if (datesError) {
+      return res.status(400).json(
+        { error: 'Dates on a destination must be inside the dates of the travel' }
+      )
+    }
   }
 
   const destinations = req.body.destinations || []

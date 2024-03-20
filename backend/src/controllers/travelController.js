@@ -14,16 +14,18 @@ export const createTravel = async (req, res) => {
         } else {
           const destinations = req.body.destinations
           const destinationsId = []
-          for (let i = 0; i < destinations.length; i++) {
-            const newDest = new Destination({
-              city: req.body.destinations[i].city,
-              country: req.body.destinations[i].country,
-              startDate: req.body.destinations[i].startDest,
-              endDate: req.body.destinations[i].endDest
-            })
+          if (destinations) {
+            for (let i = 0; i < destinations.length; i++) {
+              const newDest = new Destination({
+                city: req.body.destinations[i].city,
+                country: req.body.destinations[i].country,
+                startDate: req.body.destinations[i].startDest,
+                endDate: req.body.destinations[i].endDest
+              })
 
-            const savedDest = await newDest.save()
-            destinationsId.push(savedDest._id)
+              const savedDest = await newDest.save()
+              destinationsId.push(savedDest._id)
+            }
           }
 
           const newTravel = new PlannedTravel({

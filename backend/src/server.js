@@ -5,6 +5,7 @@ import cors from 'cors'
 
 import userRoutes from './routes/userRoutes.js'
 import travelRoutes from './routes/travelRoutes.js'
+import requestRoutes from './routes/requestRoutes.js'
 
 const app = express()
 app.use(express.json())
@@ -16,6 +17,7 @@ console.log(`NODE_ENV=${config.NODE_ENV}`)
 
 app.use('/api/users', userRoutes)
 app.use('/api/travels', travelRoutes)
+app.use('/api/requests', requestRoutes)
 
 app.listen(config.PORT, config.HOST, function () {
   console.log(`App listening on http://${config.HOST}:${config.PORT}`)
