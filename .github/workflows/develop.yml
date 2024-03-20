@@ -26,4 +26,4 @@ jobs:
         MONGO_HOST: "${{ secrets.MONGO_HOST }}"
         ACCESS_TOKEN_PRIVATE_KEY: "${{ secrets.ACCESS_TOKEN_PRIVATE_KEY }}"
         REFRESH_TOKEN_PRIVATE_KEY: "${{ secrets.REFRESH_TOKEN_PRIVATE_KEY }}"
-      run: npm test:all --prefix ./backend
+      run: npm run test:all --prefix ./backend
