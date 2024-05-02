@@ -1,0 +1,140 @@
+
+.header {
+    display: grid;
+    grid-template-rows: auto auto;
+    background-color: #5cb8f2;
+    align-items: start;
+    height: 170px;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.profile-picture-header {
+    width: 35px; 
+    height: 35px; 
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 2px;
+}
+
+.logout-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightblue;
+    border: 0.5px solid black;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.logout-button:hover {
+    transform: scale(1.1); 
+}
+
+.logout-button span {
+    margin: 10px;
+    font-family: 'Horizon', sans-serif;
+    color: black;
+    text-shadow: 0 0 0 black;
+    font-weight: bold;
+}
+
+.login-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: lightblue;
+    border: 0.5px solid black;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.login-button:hover {
+    transform: scale(1.1); 
+}
+
+.login-button span {
+    margin: 10px;
+    font-family: 'Horizon', sans-serif;
+    color: black;
+    text-shadow: 0 0 0 black;
+    font-weight: bold;
+}
+
+.nav-header {
+    display: grid;
+    grid-template-columns: repeat(6, auto);
+    align-items: center;
+    justify-items: center;
+    margin-top: 10px;
+    background-color: #5cb8f2;
+    width: 100%;
+} 
+
+.nav-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3fc742;
+    border: 0.5px solid black;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.nav-button:hover {
+    transform: scale(1.1); 
+}
+
+.nav-button span {
+    margin: 10px;
+    font-family: 'Horizon', sans-serif;
+    color: white;
+    text-shadow: 0 0 0 black;
+    font-weight: bold;
+}
+
+.logo {
+    justify-self: center;
+    margin-top: 10px;
+    height: auto;
+    width: auto;
+}
+
+.menu {
+    grid-area: menu;
+    display: none;
+}
+
+@media (max-width: 500px) {
+    .header {
+        grid-template-areas:"logo nav menu";
+        grid-template-columns: auto 1fr auto;
+    }
+
+    .header.height {
+        height: 200px; /* Altura deseada */
+        transition: height 0.3s ease; /* Transición para la propiedad height */
+    }
+    
+    .nav-header {
+        grid-template-rows: repeat(6, auto);
+        grid-template-columns: none;
+        row-gap: 20px;
+    }
+
+    .menu {
+        display: grid;
+        font-size: 24px;
+        justify-self: end;
+    }
+
+    .menu:hover {
+        font-size: 28px; 
+    }
+}

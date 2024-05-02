@@ -1,0 +1,35 @@
+.myproffile {
+    margin-top: 190px;
+    margin-left: 100px;
+    margin-right: 100px;
+
+}
+
+.myprofile-image {
+    width: 150px; /* ajusta el tamaño según tus necesidades */
+    height: 150px; /* ajusta el tamaño según tus necesidades */
+    border-radius: 50%;
+    object-fit: cover;
+    overflow: hidden;
+    position: absolute;
+  }
+
+  .myproffile-cont {
+    display: flex; 
+}
+
+
+.myproffile-info {
+margin-left: 170px;
+flex-grow: 1;
+}
+
+.myproffile-info h1 {
+    margin-bottom: 10px;
+}
+
+.myproffile-subinfo {
+    display: grid;
+    grid-template-columns: 150px auto;
+    gap: 20px;
+}

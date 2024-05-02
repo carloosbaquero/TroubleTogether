@@ -1,0 +1,29 @@
+name: Run Tests
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20.10.0'
+
+    - name: Install dependencies
+      run: npm install --prefix ./backend
+
+    - name: Run tests
+      env:
+        MONGO_HOST: "${{ secrets.MONGO_HOST }}"
+        ACCESS_TOKEN_PRIVATE_KEY: "${{ secrets.ACCESS_TOKEN_PRIVATE_KEY }}"
+        REFRESH_TOKEN_PRIVATE_KEY: "${{ secrets.REFRESH_TOKEN_PRIVATE_KEY }}"
+      run: npm run test:all --prefix ./backend

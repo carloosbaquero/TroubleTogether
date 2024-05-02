@@ -1,0 +1,19 @@
+.paginator {
+    display: flex;
+    justify-content: center;
+    justify-self: center;
+    margin: 30px;
+}
+
+.paginator-element {
+    margin-left: 20px;
+    margin-right: 20px;
+    font-size: 30px;
+    color:  #3fc742;
+    cursor: pointer;
+    transition: font-size 0.2s;
+}
+
+.paginator-element:hover {
+    font-size: 35px;
+}

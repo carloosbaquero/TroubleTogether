@@ -1,0 +1,36 @@
+.contents {
+    margin-top: 190px;
+}
+
+.travel-info {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    margin: 10px;
+}
+
+
+
+.info {
+    grid-column: 1;
+}
+
+.info h5 {
+    overflow-wrap: break-word; /* Para navegadores modernos */
+    word-wrap: break-word;
+    width: 100%;
+}
+
+.atendees {
+    grid-column: 2;
+    justify-self: end;
+}
+
+.destinations {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.request-modal {
+    width: 100px;
+    height: 120px;
+}
