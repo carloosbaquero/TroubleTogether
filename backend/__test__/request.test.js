@@ -18,10 +18,17 @@ beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_HOST)
   await mongoose.connection.dropDatabase()
 
+  const birthDate = '2002-11-02T12:00:00.000Z'
+  const city = 'Hornachos'
+  const country = 'Spain'
+
   const register = await request(app).post('/api/users/register').send({
     username: 'testUser',
     email: 'testemail@gmail.com',
-    password: 'PassW123456'
+    password: 'PassW123456',
+    birthDate,
+    city,
+    country
   })
   userId = register.body.data._id
   const login = await request(app).post('/api/users/login').send({
@@ -33,7 +40,10 @@ beforeAll(async () => {
   const register2 = await request(app).post('/api/users/register').send({
     username: 'testUser2',
     email: 'testemail2@gmail.com',
-    password: 'PassW123456'
+    password: 'PassW123456',
+    birthDate,
+    city,
+    country
   })
   userId2 = register2.body.data._id
   const login2 = (await request(app).post('/api/users/login').send({
@@ -45,7 +55,10 @@ beforeAll(async () => {
   await request(app).post('/api/users/register').send({
     username: 'testUser3',
     email: 'testemail3@gmail.com',
-    password: 'PassW123456'
+    password: 'PassW123456',
+    birthDate,
+    city,
+    country
   })
   const login3 = (await request(app).post('/api/users/login').send({
     email: 'testemail3@gmail.com',
@@ -183,10 +196,9 @@ describe('POST /api/requests/travel/:id/approve/:requestId', () => {
 
     expect(res.statusCode).toBe(200)
     const joinRequest = await Request.findOne({ user: userId2 })
-    expect(joinRequest).toBeTruthy()
-    expect(joinRequest.approved).toBe(true)
+    expect(joinRequest).toBeFalsy()
     const travel = await PlannedTravel.findById(travelId)
-    expect(travel.requests[0]).toStrictEqual(requestId)
+    expect(travel.requests[0]).not.toStrictEqual(requestId)
     expect(travel.atendees[0].toString()).toStrictEqual(userId2)
   })
 })
@@ -230,9 +242,8 @@ describe('POST /api/requests/travel/:id/reject/:requestId', () => {
     expect(res.statusCode).toBe(200)
     const joinRequest2 = await Request.findOne({ user: userId2, travel: travelId2 })
     const joinRequest3 = await Request.findOne({ user: userId, travel: travelId2 })
-    expect(joinRequest2).toBeTruthy()
+    expect(joinRequest2).toBeFalsy()
     expect(joinRequest3).toBeTruthy()
-    expect(joinRequest2.rejected).toBe(true)
     expect(joinRequest3.rejected).toBe(false)
     const travel = await PlannedTravel.findById(travelId2)
     expect(travel.atendees.length).toBe(0)

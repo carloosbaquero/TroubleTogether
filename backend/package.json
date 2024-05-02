@@ -11,7 +11,8 @@
     "test:request": "npm test request",
     "test:all": "npm run test:plannedTravel && npm run test:users && npm run test:request",
     "dev": "set NODE_ENV=development&& nodemon src/server.js",
-    "prod": "set NODE_ENV=production&& nodemon src/server.js"
+    "prod": "set NODE_ENV=production&& nodemon src/server.js",
+    "seed": "set NODE_ENV=development&& nodemon ./src/seeders/seed.js"
   },
   "keywords": [],
   "author": "Carlos Baquero Villena",

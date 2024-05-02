@@ -6,6 +6,11 @@ import User from '../src/models/User.js'
 import Session from '../src/models/session.js'
 
 let refreshToken
+let accessToken
+
+const birthDate = '2002-11-02T12:00:00.000Z'
+const city = 'Hornachos'
+const country = 'Spain'
 
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_HOST)
@@ -27,7 +32,10 @@ describe('POST /api/users/register', () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser',
       email: 'testemailgmail.com',
-      password: 'PassW123456'
+      password: 'PassW123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(400)
   })
@@ -37,7 +45,10 @@ describe('POST /api/users/register', () => {
   it('should not create an user with no email', async () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser',
-      password: 'PassW123456'
+      password: 'PassW123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(400)
   })
@@ -48,7 +59,10 @@ describe('POST /api/users/register', () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser',
       email: 'testemailgmail.com',
-      password: 'pass123456'
+      password: 'pass123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(400)
   })
@@ -58,7 +72,10 @@ describe('POST /api/users/register', () => {
   it('should not create an user with no password', async () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser',
-      email: 'testemailgmail.com'
+      email: 'testemailgmail.com',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(400)
   })
@@ -68,7 +85,10 @@ describe('POST /api/users/register', () => {
   it('should not create an user with no username', async () => {
     const res = (await request(app).post('/api/users/register').send({
       email: 'testemailgmail.com',
-      password: 'pass123456'
+      password: 'pass123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(400)
   })
@@ -79,7 +99,10 @@ describe('POST /api/users/register', () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser',
       email: 'testemail@gmail.com',
-      password: 'PassW123456'
+      password: 'PassW123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(201)
     const user = await User.findOne({ username: 'testUser' })
@@ -94,7 +117,10 @@ describe('POST /api/users/register', () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser',
       email: 'testemail2@gmail.com',
-      password: 'PassW123456'
+      password: 'PassW123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(401)
   })
@@ -105,7 +131,10 @@ describe('POST /api/users/register', () => {
     const res = (await request(app).post('/api/users/register').send({
       username: 'testUser2',
       email: 'testemail@gmail.com',
-      password: 'PassW123456'
+      password: 'PassW123456',
+      birthDate,
+      city,
+      country
     }))
     expect(res.statusCode).toBe(401)
   })
@@ -141,6 +170,7 @@ describe('POST /api/users/login', () => {
     expect(res.body.data.accessToken).toBeTruthy()
     expect(res.body.data.refreshToken).toBeTruthy()
     refreshToken = res.body.data.refreshToken
+    accessToken = res.body.data.accessToken
     const session = await Session.findOne({ token: refreshToken })
     expect(session).toBeTruthy()
   })
@@ -148,18 +178,22 @@ describe('POST /api/users/login', () => {
 
 describe('POST /api/users/refresh', () => {
   it('should not refresh token with invalid refreshtoken', async () => {
-    const res = (await request(app).post('/api/users/refresh').send({
-      refreshToken: 'yuvyuvbuhcaubvbyvyuve'
-    }))
+    const res = (await request(app).post('/api/users/refresh')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        refreshToken: 'yuvyuvbuhcaubvbyvyuve'
+      }))
     expect(res.statusCode).toBe(400)
   })
 })
 
 describe('POST /api/users/refresh', () => {
   it('should refresh token', async () => {
-    const res = (await request(app).post('/api/users/refresh').send({
-      refreshToken
-    }))
+    const res = (await request(app).post('/api/users/refresh')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        refreshToken
+      }))
     expect(res.statusCode).toBe(200)
     expect(res.body.data.accessToken).toBeTruthy()
   })

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import PlannedTravel from '../models/plannedTravel'
+import PlannedTravel from '../models/plannedTravel.js'
 
 export const isLogged = async (req, res, next) => {
   let token = req.header('Authorization')

@@ -2,10 +2,9 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import Session from '../models/session.js'
-
 import { registerValidation, loginValidation, refreshTokenValidation } from './validations/userValidation.js'
-
 import { generateTokens, verifyRefreshToken } from '../utils/utils.js'
+import PlannedTravel from '../models/plannedTravel.js'
 
 export const register = async (req, res) => {
   try {
@@ -19,7 +18,10 @@ export const register = async (req, res) => {
         const user = new User({
           username: req.body.username,
           email: req.body.email,
-          password
+          password,
+          birthDate: req.body.birthDate,
+          city: req.body.city,
+          country: req.body.country
         })
         try {
           const savedUser = await user.save()
@@ -69,7 +71,7 @@ export const getNewAccessToken = async (req, res) => {
     refreshTokenValidation(req, res).then((res) => {
       if (res.statusCode === 200) {
         verifyRefreshToken(req, res).then((result) => {
-          const payload = { _id: result.data._id, roles: result.data.roles }
+          const payload = { _id: result.data.tokenDetails._id, roles: result.data.tokenDetails.roles }
           const accessToken = jwt.sign(
             payload,
             process.env.ACCESS_TOKEN_PRIVATE_KEY,
@@ -111,6 +113,54 @@ export const logout = async (req, res) => {
         res.status(200).json({ error: null, message: 'Logged Out Sucessfully' })
       }
     })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const whoAmI = async (req, res) => {
+  let token = req.header('Authorization')
+  let notLogged = false
+  let userId
+
+  if (!token) {
+    notLogged = true
+  } else {
+    const typeToken = token.split(' ')[0]
+    if (typeToken === 'Bearer') {
+      token = token.replace('Bearer ', '')
+      try {
+        const tokenDetails = jwt.verify(
+          token,
+          process.env.ACCESS_TOKEN_PRIVATE_KEY
+        )
+        req.user = tokenDetails
+      } catch (err) {
+        notLogged = true
+      }
+    } else {
+      notLogged = true
+    }
+  }
+
+  if (notLogged) {
+    userId = ''
+  } else {
+    userId = req.user._id
+  }
+
+  res.status(200).json({ error: null, data: { userId } })
+}
+
+export const myProffile = async (req, res) => {
+  const userId = req.user._id
+  try {
+    const user = await User.findById(userId)
+    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').sort({ startDate: 'asc' })
+    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').sort({ startDate: 'asc' })
+
+    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending } })
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })

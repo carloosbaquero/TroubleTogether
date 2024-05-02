@@ -56,11 +56,16 @@ export const acceptRequest = async (req, res) => {
       return res.status(403).json({ error: 'Forbidden' })
     }
 
-    request.approved = true
-    await request.save()
-
     travel.atendees.push(request.user)
     await travel.save()
+
+    await PlannedTravel.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { requests: req.params.requestId } },
+      { new: true }
+    )
+
+    await request.deleteOne()
 
     res.status(200).json({ error: null, message: 'User`s request was approved' })
   } catch (err) {
@@ -80,11 +85,35 @@ export const rejectRequest = async (req, res) => {
     if (request.approved === true || request.rejected === true) {
       return res.status(403).json({ error: 'Forbidden' })
     }
+    await PlannedTravel.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { requests: req.params.requestId } },
+      { new: true }
+    )
 
-    request.rejected = true
-    await request.save()
+    await request.deleteOne()
 
     res.status(200).json({ error: null, message: 'User`s request was rejected' })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const leaveTravel = async (req, res) => {
+  try {
+    const travel = await PlannedTravel.findById(req.params.id)
+    const userId = req.user._id
+
+    const atendees = travel.atendees
+
+    atendees.remove(userId)
+
+    travel.atendees = atendees
+
+    await travel.save()
+
+    res.status(200).json({ error: null, message: 'You have successfully leave the travel' })
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })

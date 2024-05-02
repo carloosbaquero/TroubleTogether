@@ -17,10 +17,18 @@ let travelId4
 beforeAll(async () => {
   await mongoose.connect(process.env.MONGO_HOST)
   await mongoose.connection.dropDatabase()
+
+  const birthDate = '2002-11-02T12:00:00.000Z'
+  const city = 'Hornachos'
+  const country = 'Spain'
+
   const register = await request(app).post('/api/users/register').send({
     username: 'testUser',
     email: 'testemail@gmail.com',
-    password: 'PassW123456'
+    password: 'PassW123456',
+    birthDate,
+    city,
+    country
   })
   const organizerId = register.body.data._id
   const res = await request(app).post('/api/users/login').send({
@@ -32,13 +40,64 @@ beforeAll(async () => {
   await request(app).post('/api/users/register').send({
     username: 'testUser2',
     email: 'testemail2@gmail.com',
-    password: 'PassW123456'
+    password: 'PassW123456',
+    birthDate,
+    city,
+    country
   })
   const login = (await request(app).post('/api/users/login').send({
     email: 'testemail2@gmail.com',
     password: 'PassW123456'
   }))
   accessToken2 = login.body.data.accessToken
+
+  const dest1 = new Destination({
+    city: 'Rabat',
+    country: 'Spain',
+    endDate: '2025-07-02T12:00:00.000Z',
+    startDate: '2025-07-01T12:00:00.000Z'
+  })
+  const savedDest1 = await dest1.save()
+
+  const dest2 = new Destination({
+    city: 'Mdina',
+    country: 'Spain',
+    endDate: '2025-07-04T12:00:00.000Z',
+    startDate: '2025-05-01T12:00:00.000Z'
+  })
+  const savedDest2 = await dest2.save()
+
+  const dest3 = new Destination({
+    city: 'Zagreb',
+    country: 'Spain',
+    endDate: '2030-02-01T12:00:00.000Z',
+    startDate: '2030-01-01T12:00:00.000Z'
+  })
+  const savedDest3 = await dest3.save()
+
+  const dest4 = new Destination({
+    city: 'Dubrovnik',
+    country: 'Spain',
+    endDate: '2030-02-02T12:00:00.000Z',
+    startDate: '2025-03-01T12:00:00.000Z'
+  })
+  const savedDest4 = await dest4.save()
+
+  const dest5 = new Destination({
+    city: 'Huelva',
+    country: 'Spain',
+    endDate: '2026-02-01T12:00:00.000Z',
+    startDate: '2026-01-01T12:00:00.000Z'
+  })
+  const savedDest5 = await dest5.save()
+
+  const dest6 = new Destination({
+    city: 'Sevilla',
+    country: 'Spain',
+    endDate: '2026-03-01T12:00:00.000Z',
+    startDate: '2025-02-02T12:00:00.000Z'
+  })
+  const savedDest6 = await dest6.save()
 
   const travel2 = new PlannedTravel({
     organizerId,
@@ -47,6 +106,7 @@ beforeAll(async () => {
     startDate: '2025-07-01T12:00:00.000Z',
     endDate: '2025-09-01T12:00:00.000Z',
     state: 'Planning',
+    destination: [savedDest1.id, savedDest2.id],
     maxAtendees: 9,
     minAtendees: 2
   })
@@ -60,6 +120,7 @@ beforeAll(async () => {
     startDate: '2030-01-01T12:00:00.000Z',
     endDate: '2030-03-01T12:00:00.000Z',
     state: 'Planning',
+    destination: [savedDest3.id, savedDest4.id],
     maxAtendees: 9,
     minAtendees: 2
   })
@@ -73,6 +134,7 @@ beforeAll(async () => {
     startDate: '2026-01-01T12:00:00.000Z',
     endDate: '2026-03-01T12:00:00.000Z',
     state: 'Planning',
+    destination: [savedDest5.id, savedDest6.id],
     maxAtendees: 9,
     minAtendees: 2
   })
@@ -218,7 +280,7 @@ describe('POST /api/travels/travel', () => {
             city: 'Huelva',
             country: 'Spain',
             endDest: '2026-03-01T12:00:00.000Z',
-            startDest: '2026-01-01T12:00:00.000Z'
+            startDest: '2026-01-02T12:00:00.000Z'
           },
           {
             city: 'Sevilla',
@@ -250,7 +312,7 @@ describe('POST /api/travels/travel', () => {
     expect(travel.destination[1].city).toBe('Huelva')
     expect(travel.destination[1].country).toBe('Spain')
     expect(travel.destination[1].endDate).toStrictEqual(new Date('2026-03-01T12:00:00.000Z'))
-    expect(travel.destination[1].startDate).toStrictEqual(new Date('2026-01-01T12:00:00.000Z'))
+    expect(travel.destination[1].startDate).toStrictEqual(new Date('2026-01-02T12:00:00.000Z'))
   })
 })
 
@@ -366,7 +428,7 @@ describe('GET /api/travels/dashboard/:id', () => {
     expect(res.body.data.destination[1].city).toBe('Huelva')
     expect(res.body.data.destination[1].country).toBe('Spain')
     expect(res.body.data.destination[1].endDate).toBe('2026-03-01T12:00:00.000Z')
-    expect(res.body.data.destination[1].startDate).toBe('2026-01-01T12:00:00.000Z')
+    expect(res.body.data.destination[1].startDate).toBe('2026-01-02T12:00:00.000Z')
   })
 })
 
@@ -392,7 +454,7 @@ describe('GET /api/travels/info/:id', () => {
     expect(res.body.data.destination[1].city).toBe('Huelva')
     expect(res.body.data.destination[1].country).toBe('Spain')
     expect(res.body.data.destination[1].endDate).toBe('2026-03-01T12:00:00.000Z')
-    expect(res.body.data.destination[1].startDate).toBe('2026-01-01T12:00:00.000Z')
+    expect(res.body.data.destination[1].startDate).toBe('2026-01-02T12:00:00.000Z')
   })
 })
 

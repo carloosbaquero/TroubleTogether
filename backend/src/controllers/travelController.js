@@ -95,22 +95,36 @@ export const getTravels = async (req, res) => {
 
     const listDestinations = destinations.map(destination => destination._id)
 
+    let total = await PlannedTravel.find({
+      $or: [
+        { name: { $regex: searchNoAccents, $options: 'i' } },
+        { description: { $regex: searchNoAccents, $options: 'i' } },
+        { destination: { $in: listDestinations } }
+      ],
+      destination: { $in: listDestinations },
+      state: 'Planning',
+      startDate: { $gte: start },
+      endDate: { $lte: end },
+      $expr: { $lt: [{ $size: '$atendees' }, '$maxAtendees'] }
+    }).populate('destination')
+
+    total = total.length
+
     const travels = await PlannedTravel.find({
       $or: [
         { name: { $regex: searchNoAccents, $options: 'i' } },
         { description: { $regex: searchNoAccents, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
+      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
       $expr: { $lt: [{ $size: '$atendees' }, '$maxAtendees'] }
-    })
+    }).populate('destination')
       .sort(sortBy)
       .skip(page * limit)
       .limit(limit)
-
-    const total = travels.length
 
     const response = {
       error: null,
@@ -129,7 +143,7 @@ export const getTravels = async (req, res) => {
 
 export const getTravelInfo = async (req, res) => {
   try {
-    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees')
+    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees').populate('requests')
 
     if (!travel) {
       return res.status(404).json({ error: 'Travel not found' })
@@ -150,7 +164,10 @@ export const getTravelInfo = async (req, res) => {
 
 export const getTravelDashboard = async (req, res) => {
   try {
-    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees')
+    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees').populate({
+      path: 'requests',
+      populate: { path: 'user' }
+    })
 
     res.status(200).json({ error: null, data: travel })
   } catch (err) {
@@ -253,6 +270,8 @@ export const updateDestination = async (req, res) => {
 
         const destSaved = await dest.save()
 
+        await travel.save()
+
         res.status(201).json({
           error: null,
           data: destSaved
@@ -280,7 +299,7 @@ export const deleteDestination = async (req, res) => {
       return res.status(404).json({ error: 'Destination not found' })
     }
 
-    res.status(200).json({ message: 'Destination and reference removed successfully', updatedTravel })
+    res.status(200).json({ error: null, message: 'Destination and reference removed successfully', updatedTravel })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: 'Internal Server Error' })

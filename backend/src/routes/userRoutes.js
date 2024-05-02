@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, getNewAccessToken, logout } from '../controllers/userController.js'
+import { register, login, getNewAccessToken, logout, whoAmI, myProffile } from '../controllers/userController.js'
 import { isLogged, roleCheck } from '../middlewares/authMiddlewares.js'
 
 const userRoutes = express.Router()
@@ -15,6 +15,12 @@ userRoutes.route('/refresh')
 
 userRoutes.route('/logout')
   .delete(logout)
+
+userRoutes.route('/whoami')
+  .get(whoAmI)
+
+userRoutes.route('/my-prof')
+  .get(isLogged, myProffile)
 
 // userRoutes.route('/update')
 //   .put(isLogged, updateProfile)

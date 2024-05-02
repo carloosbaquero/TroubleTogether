@@ -37,10 +37,10 @@ export const createTravelValidation = async (req, res) => {
   }
 
   if (req.body.destinations) {
-    const datesError = req.body.destinations.some(x => (x.startDest < req.body.startDate) || (x.endDest > req.body.endDate))
+    const datesError = req.body.destinations.some(x => (x.startDest < req.body.startDate) || (x.endDest > req.body.endDate) || (x.startDest >= x.endDest))
     if (datesError) {
       return res.status(400).json(
-        { error: 'Dates on a destination must be inside the dates of the travel' }
+        { error: 'Dates on a destination must be inside the dates of the travel. Also, the start date of a destinations must be lower than its end date.' }
       )
     }
   }
@@ -48,10 +48,18 @@ export const createTravelValidation = async (req, res) => {
   const destinations = req.body.destinations || []
   const datesOverlapError = destinations.some((destination, index) => {
     const restOfDestinations = destinations.slice(index + 1)
+    const startDate = new Date(destination.startDest)
+    const endDate = new Date(destination.endDest)
     return restOfDestinations.some(otherDestination => {
-      const startDateOverlap = (destination.startDest >= otherDestination.startDest && destination.startDest < otherDestination.endDest)
-      const endDateOverlap = (destination.endDest > otherDestination.startDest && destination.endDest <= otherDestination.endDest)
-      return startDateOverlap || endDateOverlap
+      const otherStartDate = new Date(otherDestination.startDest)
+      const otherEndDate = new Date(otherDestination.endDest)
+
+      const startDateOverlap = (startDate > otherStartDate && startDate < otherEndDate)
+      const endDateOverlap = (endDate > otherStartDate && endDate < otherEndDate)
+      const datesInside = (startDate < otherStartDate && endDate > otherEndDate)
+      const sameEndDates = (endDate.toISOString() === otherEndDate.toISOString())
+      const sameStartDates = (startDate.toISOString() === otherStartDate.toISOString())
+      return startDateOverlap || endDateOverlap || datesInside || sameEndDates || sameStartDates
     })
   })
 
@@ -85,6 +93,11 @@ export const updateTravelValidation = async (req, res, travel) => {
   const minAtendees = req.body.minAtendees ? req.body.minAtendees : travel.minAtendees
   const maxAtendees = req.body.maxAtendees ? req.body.maxAtendees : travel.maxAtendees
 
+  const maxAtendeesError = maxAtendees < travel.atendees.length
+  if (maxAtendeesError) {
+    return res.status(400).json({ error: 'Max atendees must be bigger or equal than the actual number of atendees' })
+  }
+
   const atendeesError = minAtendees > maxAtendees
   if (atendeesError) {
     return res.status(400).json(
@@ -101,7 +114,7 @@ export const updateTravelValidation = async (req, res, travel) => {
   if (datesDestError) {
     return res.status(400).json({ error: 'These dates make some destinations outside the range' })
   }
-  if (!error && !atendeesError && !datesDestError) {
+  if (!error && !atendeesError && !datesDestError && !maxAtendeesError) {
     return res.status(200)
   }
 }
@@ -127,6 +140,14 @@ export const updateDestinationValidation = async (req, res, travel) => {
   const startDate = req.body.startDate ? new Date(req.body.startDate) : dest.startDate
   const endDate = req.body.endDate ? new Date(req.body.endDate) : dest.endDate
 
+  const startEndError = startDate >= endDate
+
+  if (startEndError) {
+    return res.status(400).json(
+      { error: 'Start date of a destinations must be lower than its end date' }
+    )
+  }
+
   const datesError = travel.startDate > startDate || travel.endDate < endDate
 
   if (datesError) {
@@ -134,13 +155,16 @@ export const updateDestinationValidation = async (req, res, travel) => {
       { error: 'Dates on a destination must be inside the dates of the travel' }
     )
   }
-
   const datesOverlapError = travel.destination
     .filter(destination => destination._id.toString() !== req.params.destId)
     .some(destination => {
-      const startDateOverlap = (startDate >= destination.startDate && startDate < destination.endDate)
-      const endDateOverlap = (endDate > destination.startDate && endDate <= destination.endDate)
-      return (startDateOverlap || endDateOverlap)
+      const startDateOverlap = (startDate > destination.startDate && startDate < destination.endDate)
+      const endDateOverlap = (endDate > destination.startDate && endDate < destination.endDate)
+      const datesInside = (startDate < destination.startDate && endDate > destination.endDate)
+      const sameEndDates = (endDate.toISOString() === destination.endDate.toISOString())
+      const sameStartDates = (startDate.toISOString() === destination.startDate.toISOString())
+
+      return startDateOverlap || endDateOverlap || datesInside || sameEndDates || sameStartDates
     })
 
   if (datesOverlapError) {
@@ -171,6 +195,14 @@ export const createDestinationValidation = async (req, res, travel) => {
   const startDate = new Date(req.body.startDate)
   const endDate = new Date(req.body.endDate)
 
+  const startEndError = startDate >= endDate
+
+  if (startEndError) {
+    return res.status(400).json(
+      { error: 'Start date of a destinations must be lower than its end date' }
+    )
+  }
+
   const datesError = travel.startDate > startDate || travel.endDate < endDate
 
   if (datesError) {
@@ -180,9 +212,13 @@ export const createDestinationValidation = async (req, res, travel) => {
   }
 
   const datesOverlapError = travel.destination.some(destination => {
-    const startDateOverlap = (startDate >= destination.startDate && startDate < destination.endDate)
-    const endDateOverlap = (endDate > destination.startDate && endDate <= destination.endDate)
-    return startDateOverlap || endDateOverlap
+    const startDateOverlap = (startDate > destination.startDate && startDate < destination.endDate)
+    const endDateOverlap = (endDate > destination.startDate && endDate < destination.endDate)
+    const datesInside = (startDate < destination.startDate && endDate > destination.endDate)
+    const sameEndDates = (endDate.toISOString() === destination.endDate.toISOString())
+    const sameStartDates = (startDate.toISOString() === destination.startDate.toISOString())
+
+    return startDateOverlap || endDateOverlap || datesInside || sameEndDates || sameStartDates
   })
 
   if (datesOverlapError) {

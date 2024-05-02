@@ -1,6 +1,6 @@
 import express from 'express'
-import { acceptRequest, createRequest, getTravelRequests, rejectRequest } from '../controllers/requestController'
-import { isLogged, isNotParticipant, isOrganizer, isTravelPlanningAndNotFull } from '../middlewares/authMiddlewares'
+import { acceptRequest, createRequest, getTravelRequests, leaveTravel, rejectRequest } from '../controllers/requestController.js'
+import { isLogged, isNotParticipant, isOrganizer, isParticipant, isTravelPlanningAndNotFull } from '../middlewares/authMiddlewares.js'
 
 const requestRoutes = express.Router()
 
@@ -13,5 +13,8 @@ requestRoutes.route('/travel/:id/approve/:requestId')
 
 requestRoutes.route('/travel/:id/reject/:requestId')
   .post(isLogged, isOrganizer, isTravelPlanningAndNotFull, rejectRequest)
+
+requestRoutes.route('/travel/:id/leave')
+  .delete(isLogged, isParticipant, leaveTravel)
 
 export default requestRoutes
