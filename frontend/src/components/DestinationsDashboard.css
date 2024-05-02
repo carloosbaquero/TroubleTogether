@@ -1,0 +1,8 @@
+.add-icon {
+    color: #3fc742;
+    cursor: pointer;
+}
+
+.add-icon:hover {
+    color: #1a511b
+}

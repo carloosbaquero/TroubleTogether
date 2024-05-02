@@ -1,0 +1,49 @@
+.travel-card {
+    display: grid;
+    align-items: center; /* Alinea verticalmente al centro */
+    max-width: 500px;
+    min-width: 300px;
+    border: 2px solid black;
+    margin: 10px;
+    padding: 10px;
+    transition: transform 0.3s ease; /* Agrega una transición suave para el efecto de agrandamiento */
+    cursor: pointer;
+}
+
+.travel-card:hover {
+  transform: scale(1.03); /* Aumenta el tamaño del contenedor en un 10% al pasar el cursor */
+}
+  
+  .profile-picture {
+    width: 50px; /* ajusta el tamaño según tus necesidades */
+    height: 50px; /* ajusta el tamaño según tus necesidades */
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  .profile-picture__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .travel-card-atendees {
+    margin-left: auto;
+  }
+
+  .travel-card h4 {
+    max-height: 2.6em; 
+    line-height: 1.3em; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    white-space: break-spaces;
+  }
+
+  .travel-card h5 {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin: 3px
+  }
+  
+
+  

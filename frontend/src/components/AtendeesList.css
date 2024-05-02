@@ -1,0 +1,45 @@
+.atendees-list {
+   width: 300px;
+   border: 2px solid black;
+   background-color: #5cb8f2;
+   overflow: auto;
+   max-height: 350px;
+}
+
+.atendees-title {
+    display:grid;
+    grid-template-columns: auto 1fr
+
+}
+
+.number-atendees {
+    grid-column: 2;
+    justify-self: end;
+}
+
+.atendees {
+    margin-left: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.atendee {
+    display: flex;
+    align-items: end;
+    margin-top: 5px;
+}
+
+.atendee p {
+    margin-left: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 220px;
+}
+
+.profile-picture-atendee {
+    width: 35px; /* ajusta el tamaño según tus necesidades */
+    height: 35px; /* ajusta el tamaño según tus necesidades */
+    border-radius: 50%;
+    overflow: hidden;
+  }

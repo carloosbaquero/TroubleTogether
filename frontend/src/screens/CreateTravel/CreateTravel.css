@@ -1,0 +1,76 @@
+.create-travel {
+    display: grid;
+    justify-content: center;
+    margin-top: 190px;
+    margin-bottom: 20px;
+}
+
+
+/* .create-travel {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  } */
+  
+  .destination {
+    border: 1px solid black;
+    padding: 10px;
+    margin: 10px;
+  }
+
+  .create-travel h1 {
+    justify-self: center;
+    margin-bottom: 10px;
+  }
+
+  .create-travel textarea {
+    resize: none;
+    height: 100px;
+  }
+  
+  .create-travel label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .sub-label {
+    font-size: 12px;
+  }
+  
+  .create-travel input[type='text'],
+  .create-travel input[type='date'],
+  .create-travel input[type='number'],
+  .create-travel select,
+  .create-travel textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box; /* Para incluir el padding en el ancho total */
+  }
+  
+  .create-travel .error {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .create-travel button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .create-travel button[type='button'] {
+    margin-top: 10px;
+  }
+
+  .form-group {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-column-gap: 20px;
+  }
+  

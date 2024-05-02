@@ -1,0 +1,67 @@
+.dest-card {
+    display: grid;
+    align-items: center;
+    max-width: 320px;
+    border: 2px solid black;
+    margin: 10px;
+    padding: 10px;
+    max-height: 200px;
+}
+
+.circle {
+    width: 20px; /* ajusta el tamaño del círculo según tus necesidades */
+    height: 20px; /* ajusta el tamaño del círculo según tus necesidades */
+    border-radius: 50%; /* hace que el elemento sea un círculo */
+    background-color: #3fc742; /* color de fondo del círculo */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .number {
+    color: white; /* color del número */
+    font-size: 10px; /* tamaño de fuente del número */
+    font-weight: bold; /* estilo de fuente negrita */
+  }
+
+  .dest-card-top {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .dest-card-icons {
+    grid-column: 2;
+    justify-self: end;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .edit-icon {
+    transition: transform 0.2s ease-in-out; /* Agrega una transición suave */
+    margin-left: 10px;
+  }
+  
+  .edit-icon:hover {
+    transform: scale(1.5); /* Aumenta el tamaño del icono al pasar el ratón */
+  }
+
+  .edit-dest-card {
+    display: flex;
+    margin-bottom: 10px;
+  }
+  
+  .edit-dest-card h4 {
+    margin-right: 10px;
+  }
+
+  .edit-dest-card h5 {
+    margin-right: 10px;
+  }
+
+  .edit-dest-card h6 {
+    margin-right: 10px;
+  }
+
+  .edit-dest-card select {
+    width: 100%;
+  }
