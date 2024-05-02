@@ -244,7 +244,6 @@ describe('POST /api/requests/travel/:id/reject/:requestId', () => {
     const joinRequest3 = await Request.findOne({ user: userId, travel: travelId2 })
     expect(joinRequest2).toBeFalsy()
     expect(joinRequest3).toBeTruthy()
-    expect(joinRequest3.rejected).toBe(false)
     const travel = await PlannedTravel.findById(travelId2)
     expect(travel.atendees.length).toBe(0)
   })

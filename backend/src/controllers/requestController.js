@@ -34,7 +34,7 @@ export const createRequest = async (req, res) => {
 export const getTravelRequests = async (req, res) => {
   try {
     const travel = await PlannedTravel.findById(req.params.id).populate('requests')
-    const requests = travel.requests.filter(r => r.rejected === false && r.approved === false)
+    const requests = travel.requests
 
     res.status(200).json({ error: null, data: requests })
   } catch (err) {

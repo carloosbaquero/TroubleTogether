@@ -303,4 +303,3 @@ const seedPlannedTravels = async () => {
 await seedPlannedTravels()
 
 await mongoose.connection.close()
-process.exit(0)
