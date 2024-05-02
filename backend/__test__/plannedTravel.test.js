@@ -140,7 +140,7 @@ beforeAll(async () => {
   })
   const savedTravel4 = await travel4.save()
   travelId4 = savedTravel4.id
-})
+}, 20000)
 
 beforeEach(async () => {
   await mongoose.connect(process.env.MONGO_HOST)

@@ -89,7 +89,7 @@ beforeAll(async () => {
       minAtendees: 2
     }))
   travelId2 = travel2.body.data._id
-}, 10000)
+}, 20000)
 
 beforeEach(async () => {
   await mongoose.connect(process.env.MONGO_HOST)

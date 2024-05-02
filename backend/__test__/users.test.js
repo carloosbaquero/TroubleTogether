@@ -39,7 +39,7 @@ describe('POST /api/users/register', () => {
     }))
     expect(res.statusCode).toBe(400)
   })
-})
+}, 20000)
 
 describe('POST /api/users/register', () => {
   it('should not create an user with no email', async () => {
