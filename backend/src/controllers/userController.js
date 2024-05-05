@@ -123,6 +123,7 @@ export const whoAmI = async (req, res) => {
   let token = req.header('Authorization')
   let notLogged = false
   let userId
+  let username
 
   if (!token) {
     notLogged = true
@@ -146,11 +147,13 @@ export const whoAmI = async (req, res) => {
 
   if (notLogged) {
     userId = ''
+    username = ''
   } else {
     userId = req.user._id
+    username = await User.findById(req.user._id)
   }
 
-  res.status(200).json({ error: null, data: { userId } })
+  res.status(200).json({ error: null, data: { userId, username: username.username } })
 }
 
 export const myProffile = async (req, res) => {

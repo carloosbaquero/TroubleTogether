@@ -68,7 +68,7 @@ const PlannedTravelSchema = new Schema({
   },
   state: {
     type: String,
-    enum: ['Planning', 'Planned', 'In Progress', 'Completed'],
+    enum: ['Planning', 'Planned'],
     default: 'Planning'
   },
   requests: [
@@ -88,6 +88,12 @@ PlannedTravelSchema.pre('save', async function (next) {
     })
     this.destination = await Promise.all(destinationPromises)
     this.destination.sort((a, b) => a.startDate - b.startDate)
+
+    const itineraryPromises = this.itinerary.map(async (itineraryId) => {
+      return await DailyItinerary.findById(itineraryId)
+    })
+    this.itinerary = await Promise.all(itineraryPromises)
+    this.itinerary.sort((a, b) => a.date - b.date)
 
     next()
   } catch (error) {
