@@ -1,0 +1,15 @@
+.home {
+    margin-top: 190px;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.home-info {
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.home-text {
+    margin-top: 20px;
+    margin-left: 30px;
+}

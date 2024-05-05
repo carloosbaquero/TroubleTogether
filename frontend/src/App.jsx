@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import SignUpScreen from './screens/SignUp/SignUpScreen'
 import HomeScreen from './screens/Home/HomeScreen'
 import CreateTravel from './screens/CreateTravel/CreateTravel'
@@ -20,6 +20,7 @@ function App () {
       <Route path='/globetrotters/travels/:travelId/info' element={<TravelInfoScreen />} />
       <Route path='/globetrotters/travels/:travelId/dashboard' element={<TravelDashboard />} />
       <Route path='/globetrotters/my-proffile' element={<MyProffileScreen />} />
+      <Route path='*' element={<Navigate to='/globetrotters' />} />
     </Routes>
   )
 }
