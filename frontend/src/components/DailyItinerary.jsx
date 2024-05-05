@@ -8,7 +8,7 @@ import api from '../utils/api'
 import Loader from './Loader'
 import Modal from 'react-modal'
 
-const DailyItinerary = ({ handleReload, travelId, itineraryId, index, itineraryProp, dateProp, dash, organizer }) => {
+const DailyItinerary = ({ handleReload, travelId, itineraryId, index, itineraryProp, dateProp, dash, organizer, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -109,7 +109,7 @@ const DailyItinerary = ({ handleReload, travelId, itineraryId, index, itineraryP
           <div className='circle'>
             <span className='number'>{index}</span>
           </div>
-          {dash && organizer && !editMode &&
+          {dash && organizer && !editMode && !planned &&
             <div className='dest-card-icons'>
               <GrEdit onClick={() => setEditMode(true)} className='edit-icon' />
               <MdDelete onClick={() => setShowModal(true)} className='edit-icon' />
@@ -146,7 +146,8 @@ DailyItinerary.propTypes = {
   itineraryProp: PropTypes.string.isRequired,
   dateProp: PropTypes.string.isRequired,
   dash: PropTypes.bool,
-  organizer: PropTypes.bool
+  organizer: PropTypes.bool,
+  planned: PropTypes.bool
 }
 
 export default DailyItinerary

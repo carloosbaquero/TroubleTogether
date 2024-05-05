@@ -9,7 +9,7 @@ import api from '../utils/api'
 import Loader from './Loader'
 import Modal from 'react-modal'
 
-const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, countryProp, hotelProp, startDateProp, endDateProp, dash, organizer, destinationsCount }) => {
+const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, countryProp, hotelProp, startDateProp, endDateProp, dash, organizer, destinationsCount, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -49,7 +49,6 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
   const handleApply = async () => {
     try {
       const { data } = await api.put(`/travels/dashboard/${travelId}/dest/${destId}`, input)
-      console.log(data)
       if (data.error === null) {
         setCity(data.data.city)
         setCountry(data.data.country)
@@ -68,7 +67,6 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
   const handleDelete = async () => {
     try {
       const { data } = await api.delete(`/travels/dashboard/${travelId}/dest/${destId}`)
-      console.log(data)
       if (data.error === null) {
         setShowModal(false)
         handleReload()
@@ -124,7 +122,7 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
           <div className='circle'>
             <span className='number'>{index}</span>
           </div>
-          {dash && organizer && !editMode &&
+          {dash && organizer && !editMode && !planned &&
             <div className='dest-card-icons'>
               <GrEdit onClick={() => setEditMode(true)} className='edit-icon' />
               {destinationsCount > 1 && <MdDelete onClick={() => setShowModal(true)} className='edit-icon' />}
@@ -172,7 +170,8 @@ DestinationCard.propTypes = {
   endDateProp: PropTypes.string.isRequired,
   dash: PropTypes.bool,
   organizer: PropTypes.bool,
-  destinationsCount: PropTypes.number
+  destinationsCount: PropTypes.number,
+  planned: PropTypes.bool
 }
 
 export default DestinationCard

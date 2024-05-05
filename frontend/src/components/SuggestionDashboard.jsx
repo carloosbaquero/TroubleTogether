@@ -5,7 +5,7 @@ import api from '../utils/api'
 import './DailyItinerary.css'
 import SuggestionCard from './SuggestionCard'
 
-const SuggestionDashboard = ({ handleReload, participant, travelInfo }) => {
+const SuggestionDashboard = ({ handleReload, participant, travelInfo, planned }) => {
   const [suggestions, setSuggestions] = useState(() => travelInfo.suggestions)
   const [addMode, setAddMode] = useState(false)
   const [addError, setAddError] = useState('')
@@ -42,9 +42,10 @@ const SuggestionDashboard = ({ handleReload, participant, travelInfo }) => {
 
   return (
     <>
-      <h2>Suggestions <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h2>
+      <h2>Suggestions {!planned ? <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /> : ''}</h2>
       <br />
-      {suggestions.length === 0 && !addMode && <h5>You can make suggestions for your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
+      {suggestions.length === 0 && !addMode && !planned && <h5>You can make suggestions for your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
+      {suggestions.length === 0 && planned && <h5>This travel has no suggestions</h5>}
       <div className='destinations'>
         {addMode &&
           <div className='itinerary-card'>
@@ -68,7 +69,7 @@ const SuggestionDashboard = ({ handleReload, participant, travelInfo }) => {
           </div>}
         {suggestions.map((value, index) => {
           return (
-            <SuggestionCard handleReload={handleReload} travelId={travelInfo._id} suggestionId={value._id} descriptionProp={value.description} suggestionUser={value.user} key={index} dash participant={participant} approvationsProp={value.approvations} />
+            <SuggestionCard handleReload={handleReload} travelId={travelInfo._id} suggestionId={value._id} descriptionProp={value.description} suggestionUser={value.user} key={index} dash participant={participant} approvationsProp={value.approvations} planned={planned} />
           )
         })}
       </div>
@@ -79,7 +80,8 @@ const SuggestionDashboard = ({ handleReload, participant, travelInfo }) => {
 SuggestionDashboard.propTypes = {
   handleReload: PropTypes.func,
   travelInfo: PropTypes.object.isRequired,
-  participant: PropTypes.object.isRequired
+  participant: PropTypes.object.isRequired,
+  planned: PropTypes.bool.isRequired
 }
 
 export default SuggestionDashboard

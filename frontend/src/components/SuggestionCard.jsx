@@ -9,7 +9,7 @@ import api from '../utils/api'
 import Loader from './Loader'
 import Modal from 'react-modal'
 
-const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, descriptionProp, dash, participant, approvationsProp }) => {
+const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, descriptionProp, dash, participant, approvationsProp, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
   const [loading, setLoading] = useState(true)
@@ -139,7 +139,7 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
             </div>
             <p>{suggestionUser?.username}</p>
           </div>
-          {dash && participant?.userId === suggestionUser?._id && !editMode &&
+          {dash && participant?.userId === suggestionUser?._id && !editMode && !planned &&
             <div className='dest-card-icons'>
               <GrEdit onClick={() => setEditMode(true)} className='edit-icon' />
               <MdDelete onClick={() => setShowModal(true)} className='edit-icon' />
@@ -160,30 +160,31 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
             <>
               <div>
                 <textarea name='itinerary-info' value={description} disabled />
-                <div className='dest-card-icons'>
+                {!planned &&
                   <div className='dest-card-icons'>
-                    {approvations.some(a => (a.user === participant?.userId) && a.dislike)
-                      ? (
-                        <BiSolidDislike className='edit-icon' onClick={handleDislike} />
-                        )
-                      : (
-                        <BiDislike className='edit-icon' onClick={handleDislike} />
-                        )}
+                    <div className='dest-card-icons'>
+                      {approvations.some(a => (a.user === participant?.userId) && a.dislike)
+                        ? (
+                          <BiSolidDislike className='edit-icon' onClick={handleDislike} />
+                          )
+                        : (
+                          <BiDislike className='edit-icon' onClick={handleDislike} />
+                          )}
 
-                    <p className='number-like'>{dislikes}</p>
-                  </div>
-                  <div className='dest-card-icons'>
-                    {approvations.some(a => (a.user === participant?.userId) && a.like)
-                      ? (
-                        <BiSolidLike className='edit-icon' onClick={handleLike} />
-                        )
-                      : (
-                        <BiLike className='edit-icon' onClick={handleLike} />
-                        )}
+                      <p className='number-like'>{dislikes}</p>
+                    </div>
+                    <div className='dest-card-icons'>
+                      {approvations.some(a => (a.user === participant?.userId) && a.like)
+                        ? (
+                          <BiSolidLike className='edit-icon' onClick={handleLike} />
+                          )
+                        : (
+                          <BiLike className='edit-icon' onClick={handleLike} />
+                          )}
 
-                    <p className='number-like'>{likes}</p>
-                  </div>
-                </div>
+                      <p className='number-like'>{likes}</p>
+                    </div>
+                  </div>}
               </div>
 
             </>)}
@@ -201,7 +202,8 @@ SuggestionCard.propTypes = {
   descriptionProp: PropTypes.string.isRequired,
   dash: PropTypes.bool,
   participant: PropTypes.object.isRequired,
-  approvationsProp: PropTypes.array.isRequired
+  approvationsProp: PropTypes.array.isRequired,
+  planned: PropTypes.bool.isRequired
 }
 
 export default SuggestionCard

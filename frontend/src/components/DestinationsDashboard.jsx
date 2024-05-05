@@ -7,7 +7,7 @@ import parseDate from '../utils/parseDate'
 import countries from '../utils/countries'
 import api from '../utils/api'
 
-const DestinationsDashboard = ({ handleReload, organizer, travelInfo }) => {
+const DestinationsDashboard = ({ handleReload, organizer, travelInfo, planned }) => {
   const [destinations, setDestinations] = useState(() => travelInfo.destination)
   const [addMode, setAddMode] = useState(false)
   const [addError, setAddError] = useState('')
@@ -48,7 +48,7 @@ const DestinationsDashboard = ({ handleReload, organizer, travelInfo }) => {
 
   return (
     <>
-      <h2>Destinations {organizer ? <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /> : ''}</h2>
+      <h2>Destinations {organizer && !planned ? <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /> : ''}</h2>
       <br />
       {destinations.length === 0 && !addMode && organizer && <h5>Add the first destination for your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
       {destinations.length === 0 && !addMode && !organizer && <h5>The organizer of this travel has not added a destination yet</h5>}
@@ -79,7 +79,7 @@ const DestinationsDashboard = ({ handleReload, organizer, travelInfo }) => {
           </div>}
         {destinations.map((value, index) => {
           return (
-            <DestinationCard handleReload={handleReload} travelId={travelInfo._id} destId={value._id} key={index} index={index + 1} cityProp={value.city} countryProp={value.country} hotelProp={value.hotel} startDateProp={value.startDate} endDateProp={value.endDate} dash organizer={organizer} destinationsCount={destinations.length} />
+            <DestinationCard handleReload={handleReload} travelId={travelInfo._id} destId={value._id} key={index} index={index + 1} cityProp={value.city} countryProp={value.country} hotelProp={value.hotel} startDateProp={value.startDate} endDateProp={value.endDate} dash organizer={organizer} destinationsCount={destinations.length} planned={planned} />
           )
         })}
       </div>
@@ -90,7 +90,8 @@ const DestinationsDashboard = ({ handleReload, organizer, travelInfo }) => {
 DestinationsDashboard.propTypes = {
   handleReload: PropTypes.func,
   travelInfo: PropTypes.object.isRequired,
-  organizer: PropTypes.bool
+  organizer: PropTypes.bool,
+  planned: PropTypes.bool
 }
 
 export default DestinationsDashboard

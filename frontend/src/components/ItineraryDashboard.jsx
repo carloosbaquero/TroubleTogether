@@ -6,7 +6,7 @@ import api from '../utils/api'
 import DailyItinerary from './DailyItinerary'
 import './DailyItinerary.css'
 
-const ItineraryDashboard = ({ handleReload, organizer, travelInfo }) => {
+const ItineraryDashboard = ({ handleReload, organizer, travelInfo, planned }) => {
   const [itinerary, setItinerary] = useState(() => travelInfo.itinerary)
   const [addMode, setAddMode] = useState(false)
   const [addError, setAddError] = useState('')
@@ -44,10 +44,11 @@ const ItineraryDashboard = ({ handleReload, organizer, travelInfo }) => {
 
   return (
     <>
-      <h2>Itinerary {organizer ? <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /> : ''}</h2>
+      <h2>Itinerary {organizer && !planned ? <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /> : ''}</h2>
       <br />
-      {itinerary.length === 0 && !addMode && organizer && <h5>Start planning the itinerary for your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
-      {itinerary.length === 0 && !addMode && !organizer && <h5>The organizer of this travel has not added a itinerary yet</h5>}
+      {itinerary.length === 0 && !addMode && organizer && !planned && <h5>Start planning the itinerary for your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
+      {itinerary.length === 0 && !addMode && !organizer && !planned && <h5>The organizer of this travel has not added an itinerary yet</h5>}
+      {itinerary.length === 0 && planned && <h5>This travel has no itinerary</h5>}
       <div className='destinations'>
         {addMode &&
           <div className='itinerary-card'>
@@ -72,7 +73,7 @@ const ItineraryDashboard = ({ handleReload, organizer, travelInfo }) => {
           </div>}
         {itinerary.map((value, index) => {
           return (
-            <DailyItinerary handleReload={handleReload} travelId={travelInfo._id} itineraryId={value._id} key={index} index={index + 1} itineraryProp={value.itinerary} dateProp={value.date} dash organizer={organizer} />
+            <DailyItinerary handleReload={handleReload} travelId={travelInfo._id} itineraryId={value._id} key={index} index={index + 1} itineraryProp={value.itinerary} dateProp={value.date} dash organizer={organizer} planned={planned} />
           )
         })}
       </div>
@@ -83,7 +84,8 @@ const ItineraryDashboard = ({ handleReload, organizer, travelInfo }) => {
 ItineraryDashboard.propTypes = {
   handleReload: PropTypes.func,
   travelInfo: PropTypes.object.isRequired,
-  organizer: PropTypes.bool
+  organizer: PropTypes.bool,
+  planned: PropTypes.bool
 }
 
 export default ItineraryDashboard

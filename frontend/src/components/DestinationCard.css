@@ -43,11 +43,11 @@
   
   .edit-icon:hover {
     transform: scale(1.5); /* Aumenta el tamaño del icono al pasar el ratón */
+    cursor: pointer;
   }
 
   .edit-dest-card {
     display: flex;
-    margin-bottom: 10px;
   }
   
   .edit-dest-card h4 {
