@@ -7,7 +7,7 @@ const HomeScreen = () => {
       <Header />
       <div className='home'>
         <div className='home-info'>
-          <img src='/favicon.svg' alt='whole-logo' />
+          <img src='/big-logo.svg' alt='whole-logo' />
           <div className='home-text'>
             <h4>Globetrotters </h4>
             <p>is the website where you can find your dreamt travel. We want to create a big community of travellers who can share their favourites destinations so they can find someone to start planning the trip. </p>

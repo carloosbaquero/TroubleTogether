@@ -52,7 +52,7 @@ const Header = () => {
 
   return (
     <header className={`header ${isSmallScreen && isNavVisible ? 'height' : ''}`}>
-      <img src='/final-logo.png' className='logo' alt='logo' />
+      <img src='/final-logo.svg' className='logo' alt='logo' />
       {(isNavVisible || !isSmallScreen) &&
         <nav className='nav-header'>
           <div className='nav-button' onClick={() => navigate('/globetrotters')}><span><IoHomeOutline /> Home</span></div>
