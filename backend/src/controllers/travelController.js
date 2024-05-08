@@ -92,7 +92,12 @@ export const getTravels = async (req, res) => {
 
     const searchNoAccents = removeAccents(search)
 
-    const destinations = await Destination.find({ city: { $regex: searchNoAccents, $options: 'i' } })
+    const destinations = await Destination.find({
+      $or: [
+        { city: { $regex: searchNoAccents, $options: 'i' } },
+        { city: { $regex: search, $options: 'i' } }
+      ]
+    })
       .where('country')
       .in([...country])
 
@@ -100,11 +105,12 @@ export const getTravels = async (req, res) => {
 
     let total = await PlannedTravel.find({
       $or: [
+        { name: { $regex: search, $options: 'i' } },
         { name: { $regex: searchNoAccents, $options: 'i' } },
         { description: { $regex: searchNoAccents, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
-      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
@@ -115,11 +121,12 @@ export const getTravels = async (req, res) => {
 
     const travels = await PlannedTravel.find({
       $or: [
+        { name: { $regex: search, $options: 'i' } },
         { name: { $regex: searchNoAccents, $options: 'i' } },
         { description: { $regex: searchNoAccents, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
-      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
