@@ -1,6 +1,7 @@
 import Joi from '@hapi/joi'
 import countries from '../../utils/countries.js'
 import Destination from '../../models/destination.js'
+import DailyItinerary from '../../models/dailyItinerary.js'
 
 export const createTravelValidation = async (req, res) => {
   const destinationSchema = Joi.object({
@@ -226,6 +227,110 @@ export const createDestinationValidation = async (req, res, travel) => {
   }
 
   if (!error && !datesError && !datesOverlapError) {
+    return res.status(200)
+  }
+}
+
+export const addDailyItineraryValidation = async (req, res, travel) => {
+  const itinerarySchema = Joi.object({
+    itinerary: Joi.string().max(1500).min(2).required().label('Itinerary'),
+    date: Joi.date().required().label('Date')
+  })
+
+  const { error } = itinerarySchema.validate(req.body)
+  if (error) {
+    return res.status(400).json(
+      { error: error.details[0].message }
+    )
+  }
+  const date = new Date(req.body.date)
+  const endDate = travel.endDate
+  const startDate = travel.startDate
+
+  let errorSameDate = false
+
+  for (const itId of travel.itinerary) {
+    const it = await DailyItinerary.findById(itId)
+    const itDate = new Date(it.date)
+
+    if (itDate.toISOString() === date.toISOString()) {
+      errorSameDate = true
+      break
+    }
+  }
+
+  if (errorSameDate) {
+    return res.status(400).json({ error: 'It can only exist one daily itinerary per day' })
+  }
+
+  const errorDate = endDate < date || startDate > date
+  if (errorDate) {
+    return res.status(400).json({ error: 'Date of a daily itinerary must be inside travel`s dates' })
+  }
+
+  if (!error && !errorDate && !errorSameDate) {
+    return res.status(200)
+  }
+}
+
+export const updateDailyItineraryValidation = async (req, res, travel, itineraryId) => {
+  const itinerarySchema = Joi.object({
+    itinerary: Joi.string().max(1500).min(2).required().label('Itinerary'),
+    date: Joi.date().required().label('Date')
+  })
+
+  const { error } = itinerarySchema.validate(req.body)
+  if (error) {
+    return res.status(400).json(
+      { error: error.details[0].message }
+    )
+  }
+  const date = new Date(req.body.date)
+  const endDate = travel.endDate
+  const startDate = travel.startDate
+
+  let errorSameDate = false
+
+  for (const itId of travel.itinerary) {
+    if (itineraryId.toString() === itId.toString()) {
+      continue
+    }
+    const it = await DailyItinerary.findById(itId)
+    const itDate = new Date(it.date)
+
+    if (itDate.toISOString() === date.toISOString()) {
+      errorSameDate = true
+      break
+    }
+  }
+
+  if (errorSameDate) {
+    return res.status(400).json({ error: 'It can only exist one daily itinerary per day' })
+  }
+
+  const errorDate = endDate < date || startDate > date
+  if (errorDate) {
+    return res.status(400).json({ error: 'Date of a daily itinerary must be inside travel`s dates' })
+  }
+
+  if (!error && !errorDate && !errorSameDate) {
+    return res.status(200)
+  }
+}
+
+export const addSuggestionValidation = async (req, res) => {
+  const suggestionSchema = Joi.object({
+    description: Joi.string().max(1500).min(2).required().label('Suggestion')
+  })
+
+  const { error } = suggestionSchema.validate(req.body)
+  if (error) {
+    return res.status(400).json(
+      { error: error.details[0].message }
+    )
+  }
+
+  if (!error) {
     return res.status(200)
   }
 }

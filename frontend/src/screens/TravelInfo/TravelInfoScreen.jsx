@@ -160,10 +160,10 @@ const TravelInfoScreen = () => {
           </div>
           <div className='atendees'>
             <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
-            {!(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) && !requested &&
+            {!(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) && !requested && travelInfo.state === 'Planning' &&
               <button className='green-button' onClick={() => setShowModal(true)}>Request to join</button>}
 
-            {requested && !(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) &&
+            {requested && travelInfo.state === 'Planning' && !(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) &&
               <p>Your request needs to be reviewed</p>}
           </div>
         </div>

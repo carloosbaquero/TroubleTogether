@@ -119,7 +119,7 @@ const SignUpScreen = () => {
             </div>
             <div className='input-field'>
               <i className='fas fa-lock' />
-              <input value={birthDate} type='date' placeholder='Birth date' onChange={e => setBirthDate(e.target.value)} />
+              <input className='signup-birthdate' value={birthDate} type='date' placeholder='Birth date' onChange={e => setBirthDate(e.target.value)} />
             </div>
 
             <div className='input-line'>

@@ -52,18 +52,6 @@ const UserSchema = new mongoose.Schema({
     required: false,
     max: 30
   },
-  languages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'SpokenLanguage'
-    }
-  ],
-  visitedCities: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'VisitedCity'
-    }
-  ],
   roles: {
     type: [String],
     enum: ['user', 'admin', 'super_admin'],

@@ -1,5 +1,7 @@
 .contents {
     margin-top: 190px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .travel-info {
@@ -8,7 +10,10 @@
     margin: 10px;
 }
 
-
+.status {
+    display: flex;
+    justify-content: right;
+}
 
 .info {
     grid-column: 1;

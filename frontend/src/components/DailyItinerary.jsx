@@ -1,30 +1,23 @@
 import parseDate from '../utils/parseDate'
 import PropTypes from 'prop-types'
-import './DestinationCard.css'
+import './DailyItinerary.css'
 import { GrEdit } from 'react-icons/gr'
 import { MdDelete } from 'react-icons/md'
 import { useEffect, useState } from 'react'
-import countries from '../utils/countries'
 import api from '../utils/api'
 import Loader from './Loader'
 import Modal from 'react-modal'
 
-const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, countryProp, hotelProp, startDateProp, endDateProp, dash, organizer, destinationsCount, planned }) => {
+const DailyItinerary = ({ handleReload, travelId, itineraryId, index, itineraryProp, dateProp, dash, organizer, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
-  const [city, setCity] = useState(cityProp)
-  const [country, setCountry] = useState(countryProp)
-  const [hotel, setHotel] = useState(hotelProp)
-  const [startDate, setStartDate] = useState(startDateProp)
-  const [endDate, setEndDate] = useState(endDateProp)
+  const [itinerary, setItinerary] = useState(itineraryProp)
+  const [date, setDate] = useState(dateProp)
   const [input, setInput] = useState({
-    city: cityProp,
-    country: countryProp,
-    hotel: hotelProp,
-    startDate: startDateProp,
-    endDate: endDateProp
+    itinerary: itineraryProp,
+    date: dateProp
   })
 
   const handleChange = (e) => {
@@ -38,23 +31,17 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
   const handleCancel = () => {
     setEditMode(false)
     setInput({
-      city,
-      country,
-      hotel,
-      startDate,
-      endDate
+      itinerary,
+      date
     })
   }
 
   const handleApply = async () => {
     try {
-      const { data } = await api.put(`/travels/dashboard/${travelId}/dest/${destId}`, input)
+      const { data } = await api.put(`/travels/dashboard/${travelId}/itinerary/${itineraryId}`, input)
       if (data.error === null) {
-        setCity(data.data.city)
-        setCountry(data.data.country)
-        setHotel(data.data.hotel)
-        setStartDate(data.data.startDate)
-        setEndDate(data.data.endDate)
+        setItinerary(data.data.itinerary)
+        setDate(data.data.date)
         setEditMode(false)
         handleReload()
       }
@@ -66,7 +53,7 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
 
   const handleDelete = async () => {
     try {
-      const { data } = await api.delete(`/travels/dashboard/${travelId}/dest/${destId}`)
+      const { data } = await api.delete(`/travels/dashboard/${travelId}/itinerary/${itineraryId}`)
       if (data.error === null) {
         setShowModal(false)
         handleReload()
@@ -77,10 +64,10 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
   }
 
   useEffect(() => {
-    if (travelId && startDate && endDate && input) {
+    if (travelId && date && input) {
       setLoading(false)
     }
-  }, [travelId, startDate, endDate, input])
+  }, [travelId, date, input])
 
   if (loading) {
     return (<Loader />)
@@ -101,9 +88,9 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
         }}
       >
         <div>
-          <h3>Delete Destination</h3>
+          <h3>Delete Daily Itinerary</h3>
           <br />
-          <p>Do you want to delete this destination?</p>
+          <p>Do you want to delete this daily itinerary?</p>
           <br />
           <div className='modal-buttons'>
             <button className='green-button' onClick={() => setShowModal(false)}>Go back</button>
@@ -112,7 +99,7 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
         </div>
       </Modal>
 
-      <div className='dest-card' style={{ maxHeight: editMode ? '300px' : '200px' }}>
+      <div className='itinerary-card' style={{ minHeight: editMode ? '350px' : '300px' }}>
         {editError && editMode &&
           <>
             <p className='error-message'>{editError}</p>
@@ -125,7 +112,7 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
           {dash && organizer && !editMode && !planned &&
             <div className='dest-card-icons'>
               <GrEdit onClick={() => setEditMode(true)} className='edit-icon' />
-              {destinationsCount > 1 && <MdDelete onClick={() => setShowModal(true)} className='edit-icon' />}
+              <MdDelete onClick={() => setShowModal(true)} className='edit-icon' />
             </div>}
           {dash && organizer && editMode &&
             <div className='dest-card-icons'>
@@ -134,23 +121,16 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
             </div>}
 
         </div>
-        <br />
         {editMode
           ? (
             <>
-              <div className='edit-dest-card'><h4>City:</h4> <input type='text' name='city' value={input.city} onChange={handleChange} /></div>
-              <div className='edit-dest-card'><h4>Country:</h4> <select name='country' value={input.country} onChange={handleChange}>{countries.map((value, index) => { return (<option key={index} value={value}>{value}</option>) })}</select></div>
-              <div className='edit-dest-card'><h5>Accomodation:</h5><input name='hotel' type='text' value={input.hotel} onChange={handleChange} /></div>
-              <div className='edit-dest-card'><h6>Start:</h6> <input type='date' name='startDate' value={parseDate(input.startDate)} onChange={handleChange} /></div>
-              <div className='edit-dest-card'><h6>End:</h6> <input type='date' name='endDate' value={parseDate(input.endDate)} onChange={handleChange} /></div>
+              <div className='edit-dest-card'><h4>Date:</h4> <input type='date' name='date' value={parseDate(input.date)} onChange={handleChange} /></div>
+              <div className='edit-dest-card'><textarea name='itinerary' value={input.itinerary} onChange={handleChange} /></div>
             </>)
           : (
             <>
-              <h4>City: {city}</h4>
-              <h4>Country: {country}</h4>
-              {hotel && <h5>Accomodation: {hotel}</h5>}
-              <h6>Start: {parseDate(startDate)}</h6>
-              <h6>End: {parseDate(endDate)}</h6>
+              <h4>Date: {parseDate(date)}</h4>
+              <textarea name='itinerary-info' value={itinerary} disabled />
             </>)}
 
       </div>
@@ -158,20 +138,16 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
   )
 }
 
-DestinationCard.propTypes = {
+DailyItinerary.propTypes = {
   handleReload: PropTypes.func,
   travelId: PropTypes.string.isRequired,
-  destId: PropTypes.string,
+  itineraryId: PropTypes.string,
   index: PropTypes.number.isRequired,
-  cityProp: PropTypes.string.isRequired,
-  countryProp: PropTypes.string.isRequired,
-  hotelProp: PropTypes.string,
-  startDateProp: PropTypes.string.isRequired,
-  endDateProp: PropTypes.string.isRequired,
+  itineraryProp: PropTypes.string.isRequired,
+  dateProp: PropTypes.string.isRequired,
   dash: PropTypes.bool,
   organizer: PropTypes.bool,
-  destinationsCount: PropTypes.number,
   planned: PropTypes.bool
 }
 
-export default DestinationCard
+export default DailyItinerary

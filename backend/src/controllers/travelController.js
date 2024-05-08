@@ -1,7 +1,10 @@
+import ApprovationSugestion from '../models/approvationSugestion.js'
+import DailyItinerary from '../models/dailyItinerary.js'
 import Destination from '../models/destination.js'
 import PlannedTravel from '../models/plannedTravel.js'
+import Suggestion from '../models/suggestion.js'
 import countries from '../utils/countries.js'
-import { createDestinationValidation, createTravelValidation, updateDestinationValidation, updateTravelValidation } from './validations/travelValidation.js'
+import { addDailyItineraryValidation, addSuggestionValidation, createDestinationValidation, createTravelValidation, updateDailyItineraryValidation, updateDestinationValidation, updateTravelValidation } from './validations/travelValidation.js'
 
 export const createTravel = async (req, res) => {
   try {
@@ -89,7 +92,12 @@ export const getTravels = async (req, res) => {
 
     const searchNoAccents = removeAccents(search)
 
-    const destinations = await Destination.find({ city: { $regex: searchNoAccents, $options: 'i' } })
+    const destinations = await Destination.find({
+      $or: [
+        { city: { $regex: searchNoAccents, $options: 'i' } },
+        { city: { $regex: search, $options: 'i' } }
+      ]
+    })
       .where('country')
       .in([...country])
 
@@ -97,11 +105,12 @@ export const getTravels = async (req, res) => {
 
     let total = await PlannedTravel.find({
       $or: [
+        { name: { $regex: search, $options: 'i' } },
         { name: { $regex: searchNoAccents, $options: 'i' } },
         { description: { $regex: searchNoAccents, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
-      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
@@ -112,11 +121,12 @@ export const getTravels = async (req, res) => {
 
     const travels = await PlannedTravel.find({
       $or: [
+        { name: { $regex: search, $options: 'i' } },
         { name: { $regex: searchNoAccents, $options: 'i' } },
         { description: { $regex: searchNoAccents, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
-      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
@@ -151,7 +161,7 @@ export const getTravelInfo = async (req, res) => {
 
     if (travel.state === 'Planning' && travel.maxAtendees > travel.atendees.length) {
       res.status(200).json({ error: null, data: travel })
-    } else if (travel.state === 'Completed') {
+    } else if (travel.state === 'Planned') {
       res.status(200).json({ error: null, data: travel })
     } else {
       res.status(403).json({ error: 'Forbidden' })
@@ -164,10 +174,19 @@ export const getTravelInfo = async (req, res) => {
 
 export const getTravelDashboard = async (req, res) => {
   try {
-    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees').populate({
-      path: 'requests',
-      populate: { path: 'user' }
-    })
+    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees').populate('itinerary')
+      .populate({
+        path: 'suggestions',
+        populate: { path: 'user' }
+      })
+      .populate({
+        path: 'suggestions',
+        populate: { path: 'approvations' }
+      })
+      .populate({
+        path: 'requests',
+        populate: { path: 'user' }
+      })
 
     res.status(200).json({ error: null, data: travel })
   } catch (err) {
@@ -302,6 +321,259 @@ export const deleteDestination = async (req, res) => {
     res.status(200).json({ error: null, message: 'Destination and reference removed successfully', updatedTravel })
   } catch (err) {
     console.error(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const addDailyItinerary = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const travel = await PlannedTravel.findById(travelId)
+
+    addDailyItineraryValidation(req, res, travel).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        const newItinerary = new DailyItinerary({
+          itinerary: req.body.itinerary,
+          date: req.body.date
+        })
+
+        const savedItinerary = await newItinerary.save()
+
+        travel.itinerary.push(savedItinerary._id)
+        await travel.save()
+        res.status(201).json({ error: null, data: savedItinerary })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const updateDailyItinerary = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const itineraryId = req.params.itId
+    const travel = await PlannedTravel.findById(travelId)
+    const dailyItinerary = await DailyItinerary.findById(itineraryId)
+
+    updateDailyItineraryValidation(req, res, travel, itineraryId).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        dailyItinerary.itinerary = req.body.itinerary
+        dailyItinerary.date = req.body.date
+
+        const savedItinerary = await dailyItinerary.save()
+
+        await travel.save()
+        res.status(201).json({ error: null, data: savedItinerary })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const deleteDailyItinerary = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const itineraryId = req.params.itId
+
+    const updatedTravel = await PlannedTravel.findByIdAndUpdate(
+      travelId,
+      { $pull: { itinerary: itineraryId } },
+      { new: true }
+    )
+
+    const deletedDailyItinerary = await DailyItinerary.findByIdAndDelete(itineraryId)
+    if (!deletedDailyItinerary) {
+      return res.status(404).json({ error: 'Daily itinerary not found' })
+    }
+
+    res.status(200).json({ error: null, message: 'Daily itinerary and reference removed successfully', updatedTravel })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const addSuggestion = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const userId = req.user._id
+    const travel = await PlannedTravel.findById(travelId)
+
+    addSuggestionValidation(req, res).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        const newSuggestion = new Suggestion({
+          description: req.body.description,
+          user: userId
+        })
+
+        const savedSuggestion = await newSuggestion.save()
+
+        travel.suggestions.push(savedSuggestion._id)
+        await travel.save()
+        res.status(201).json({ error: null, data: savedSuggestion })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const updateSuggestion = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const suggestionId = req.params.sugId
+    const travel = await PlannedTravel.findById(travelId)
+    const suggestion = await Suggestion.findById(suggestionId)
+
+    addSuggestionValidation(req, res).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        if (suggestion.user.toString() !== req.user._id.toString()) {
+          return res.status(403).json({ error: 'You only can edit suggestions that you made' })
+        }
+        suggestion.description = req.body.description
+
+        const savedSuggestion = await suggestion.save()
+
+        await travel.save()
+        res.status(201).json({ error: null, data: savedSuggestion })
+      }
+    })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const deleteSuggestion = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const suggestionId = req.params.sugId
+
+    const suggestion = await Suggestion.findById(suggestionId)
+
+    if (suggestion.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: 'You only can edit suggestions that you made' })
+    }
+
+    const updatedTravel = await PlannedTravel.findByIdAndUpdate(
+      travelId,
+      { $pull: { suggestions: suggestionId } },
+      { new: true }
+    )
+
+    const deletedSuggestion = await Suggestion.findByIdAndDelete(suggestionId)
+    if (!deletedSuggestion) {
+      return res.status(404).json({ error: 'Suggestion not found' })
+    }
+
+    res.status(200).json({ error: null, message: 'Suggestion and reference removed successfully', updatedTravel })
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const likeSuggestion = async (req, res) => {
+  try {
+    const userId = req.user._id
+    const suggestionId = req.params.sugId
+    const suggestion = await Suggestion.findById(suggestionId).populate('approvations')
+
+    const approvationOfUserArray = suggestion.approvations.filter(a => a.user.toString() === userId)
+
+    if (approvationOfUserArray.length === 1) {
+      const approvationOfUser = approvationOfUserArray[0]
+      if (approvationOfUser.like) {
+        approvationOfUser.like = false
+      } else {
+        approvationOfUser.like = true
+        approvationOfUser.dislike = false
+      }
+      const savedApprovation = await approvationOfUser.save()
+      return res.status(200).json({ error: null, data: savedApprovation })
+    } else {
+      const approvation = new ApprovationSugestion({
+        like: true,
+        dislike: false,
+        user: userId
+      })
+      const savedApprovation = await approvation.save()
+      const updatedSuggestion = await Suggestion.findById(suggestionId)
+      updatedSuggestion.approvations.push(savedApprovation._id)
+      await updatedSuggestion.save()
+      return res.status(201).json({ error: null, data: savedApprovation })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const dislikeSuggestion = async (req, res) => {
+  try {
+    const userId = req.user._id
+    const suggestionId = req.params.sugId
+    const suggestion = await Suggestion.findById(suggestionId).populate('approvations')
+
+    const approvationOfUserArray = suggestion.approvations.filter(a => a.user.toString() === userId)
+
+    if (approvationOfUserArray.length === 1) {
+      const approvationOfUser = approvationOfUserArray[0]
+      if (approvationOfUser.dislike) {
+        approvationOfUser.dislike = false
+      } else {
+        approvationOfUser.dislike = true
+        approvationOfUser.like = false
+      }
+      const savedApprovation = await approvationOfUser.save()
+      return res.status(200).json({ error: null, data: savedApprovation })
+    } else {
+      const approvation = new ApprovationSugestion({
+        dislike: true,
+        like: false,
+        user: userId
+      })
+      const savedApprovation = await approvation.save()
+      const updatedSuggestion = await Suggestion.findById(suggestionId)
+      updatedSuggestion.approvations.push(savedApprovation._id)
+      await updatedSuggestion.save()
+      return res.status(201).json({ error: null, data: savedApprovation })
+    }
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const changeState = async (req, res) => {
+  try {
+    const travelId = req.params.id
+    const travel = await PlannedTravel.findById(travelId)
+    if (travel.state === 'Planning') {
+      travel.state = 'Planned'
+    } else if (travel.state === 'Planned') {
+      travel.state = 'Planning'
+    } else {
+      return res.status(500).json({ error: 'Internal Server Error' })
+    }
+
+    await travel.save()
+    res.status(200).json({ error: null, message: `You have changed your travel's state to: ${travel.state}` })
+  } catch (err) {
+    console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })
   }
 }

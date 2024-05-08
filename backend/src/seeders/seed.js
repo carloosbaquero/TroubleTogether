@@ -230,7 +230,7 @@ const seedPlannedTravels = async () => {
       {
         organizerId: userIds[1],
         name: 'Viaje a Tokio',
-        description: 'Vacaciones en Japón',
+        description: 'Vacaciones en Japon',
         destination: [destinationIds[1]],
         suggestions: [],
         itinerary: [],

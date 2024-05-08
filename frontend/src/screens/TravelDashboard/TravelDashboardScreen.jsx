@@ -13,16 +13,20 @@ import Modal from 'react-modal'
 import { GrEdit } from 'react-icons/gr'
 import { Formik, Field, Form, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
+import ItineraryDashboard from '../../components/ItineraryDashboard'
+import SuggestionDashboard from '../../components/SuggestionDashboard'
 
 const TravelDashboard = () => {
   const [travelInfo, setTravelInfo] = useState({})
   const [showModal, setShowModal] = useState(false)
+  const [showModalState, setShowModalState] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
   const [input, setInput] = useState({})
   const { travelId } = useParams()
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState('')
+  const [username, setUsername] = useState('')
   const navigate = useNavigate()
   const [shouldNavigate, setShouldNavigate] = useState(false)
   const [shouldReload, setShouldReload] = useState(false)
@@ -75,6 +79,18 @@ const TravelDashboard = () => {
     }
   }
 
+  const handleChangeState = async () => {
+    try {
+      const { data } = await api.post(`/travels/dashboard/${travelId}/state`)
+      if (data.error === null) {
+        setShowModalState(false)
+        handleReload()
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   useEffect(() => {
     const getTravelInfo = async () => {
       setLoading(true)
@@ -98,6 +114,7 @@ const TravelDashboard = () => {
             if (!(data.data.userId === resTravelInfo.organizerId._id || resTravelInfo.atendees.some(atendee => atendee._id === data.data.userId))) {
               setShouldNavigate(true)
             } else {
+              setUsername(data.data.username)
               setLoading(false)
             }
             return data.data.userId
@@ -126,13 +143,55 @@ const TravelDashboard = () => {
   }
 
   const tabs = [
-    { title: 'Destinations', content: <DestinationsDashboard handleReload={handleReload} organizer={travelInfo.organizerId._id === userId} travelInfo={travelInfo} /> },
-    { title: 'Itinerary', content: <div>To implement 2</div> },
-    { title: 'Suggestions', content: <div>To implement 3</div> },
-    { title: 'Requests', content: <RequestsDashboard travelInfo={travelInfo} /> }
+    { title: 'Destinations', content: <DestinationsDashboard handleReload={handleReload} organizer={travelInfo.organizerId._id === userId} travelInfo={travelInfo} planned={travelInfo.state === 'Planned'} /> },
+    { title: 'Itinerary', content: <ItineraryDashboard handleReload={handleReload} organizer={travelInfo.organizerId._id === userId} travelInfo={travelInfo} planned={travelInfo.state === 'Planned'} /> },
+    { title: 'Suggestions', content: <SuggestionDashboard handleReload={handleReload} participant={{ userId, username }} travelInfo={travelInfo} planned={travelInfo.state === 'Planned'} /> },
+    travelInfo.state === 'Planning'
+      ? { title: 'Requests', content: <RequestsDashboard travelInfo={travelInfo} /> }
+      : { title: 'Posts', content: <div /> }
   ]
   return (
     <>
+      <Modal
+        isOpen={showModalState} style={{
+          overlay: {
+            zIndex: 3
+          },
+          content: {
+            width: '420px',
+            height: '250px',
+            margin: 'auto'
+          }
+        }}
+      >
+        <div>
+          {travelInfo.state === 'Planning'
+            ? (
+              <>
+                <h3>Mark travel as Planned</h3>
+                <br />
+                <p>When you have marked your travel as Planned, you will not be able to edit your travel and all the atendees will have the option of uploading posts about this travel</p>
+                <br />
+                <div className='modal-buttons'>
+                  <button className='red-button' onClick={() => setShowModal(false)}>Cancel</button>
+                  <button className='green-button' onClick={handleChangeState}>Mark travel as Planned</button>
+                </div>
+              </>
+              )
+            : (
+              <>
+                <h3>Mark travel as Planning</h3>
+                <br />
+                <p>When you have marked your travel as Planning, you will be able to edit your travel, but you will not be able to upload or view the posts that were made</p>
+                <br />
+                <div className='modal-buttons'>
+                  <button className='red-button' onClick={() => setShowModal(false)}>Cancel</button>
+                  <button className='green-button' onClick={handleChangeState}>Mark travel as Planning</button>
+                </div>
+              </>
+              )}
+        </div>
+      </Modal>
       <Modal
         isOpen={showModal} style={{
           overlay: {
@@ -217,9 +276,9 @@ const TravelDashboard = () => {
         </Formik>
       </Modal>
       <Header />
-      <div className='travels'>
+      <div className='contents'>
 
-        <h1>{travelInfo.name} {travelInfo.organizerId._id === userId ? <GrEdit onClick={() => setEditMode(true)} className='edit-icon' /> : ''}</h1>
+        <h1>{travelInfo.name} {travelInfo.organizerId._id === userId && travelInfo.state === 'Planning' ? <GrEdit onClick={() => setEditMode(true)} className='edit-icon' /> : ''}</h1>
         <hr />
         <div className='travel-info'>
 
@@ -230,6 +289,11 @@ const TravelDashboard = () => {
             <br />
             <h5>Start: {parseDate(travelInfo.startDate)}</h5>
             <h5>End: {parseDate(travelInfo.endDate)}</h5>
+            <h5>State: {travelInfo.state}</h5>
+            {travelInfo.organizerId._id === userId &&
+              <div className='status'>
+                <button className='green-button' onClick={() => setShowModalState(true)}>Mark as {travelInfo.state === 'Planning' ? 'Planned' : 'Planning'}</button>
+              </div>}
             <br />
             <hr />
             <Tabs tabs={tabs} />
@@ -237,7 +301,7 @@ const TravelDashboard = () => {
           </div>
           <div className='atendees'>
             <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
-            {travelInfo && travelInfo.atendees.some(atendee => atendee._id === userId) && <button className='red-button' onClick={() => setShowModal(true)}>Leave travel</button>}
+            {travelInfo && travelInfo.atendees.some(atendee => atendee._id === userId) && travelInfo.state === 'Planning' && <button className='red-button' onClick={() => setShowModal(true)}>Leave travel</button>}
           </div>
         </div>
       </div>

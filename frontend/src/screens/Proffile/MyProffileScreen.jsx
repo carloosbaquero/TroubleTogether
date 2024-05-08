@@ -32,8 +32,7 @@ const MyProffileScreen = () => {
     })}
   </div>
     },
-    { title: 'Posts', content: <div>To implement 3</div> },
-    { title: 'Bucket List', content: <div>To implement 4</div> }
+    { title: 'Posts', content: <div>To implement 3</div> }
   ]
 
   useEffect(() => {

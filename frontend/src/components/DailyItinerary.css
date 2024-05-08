@@ -1,0 +1,24 @@
+.itinerary-card {
+    display: grid;
+    align-items: center;
+    max-width: 320px;
+    border: 2px solid black;
+    margin: 10px;
+    padding: 10px;
+    min-height: 300px;
+    max-height: 500px;
+}
+
+.itinerary-card textarea {
+    width: 100%;
+    min-height: 200px;
+    max-height: 500px;
+    resize: none;
+}
+   
+
+textarea {
+    font-family: Arial, sans-serif; /* Fuente */
+    font-size: 14px;
+    padding: 10px;
+}

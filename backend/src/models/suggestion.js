@@ -1,25 +1,19 @@
 import mongoose from 'mongoose'
+import ApprovationSugestion from './approvationSugestion.js'
 
 const Schema = mongoose.Schema
 
-const suggestionSchema = new Schema({
-  title: {
-    type: String,
-    required: true,
-    min: 6,
-    max: 60
-  },
+const SuggestionSchema = new Schema({
   description: {
     type: String,
-    max: 550
+    required: true,
+    max: 1500,
+    min: 2
   },
-  approved: {
-    type: Boolean,
-    default: false
-  },
-  rejected: {
-    type: Boolean,
-    default: false
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
   approvations: [
     {
@@ -30,4 +24,19 @@ const suggestionSchema = new Schema({
 },
 { timestamps: true })
 
-export default mongoose.model('Suggestion', suggestionSchema)
+SuggestionSchema.pre('findByIdAndDelete', { document: true, query: false }, async function (next) {
+  try {
+    if (this.approvations?.length > 0) {
+      const approvationsPromises = this.approvations.map(async (approvationId) => {
+        return await ApprovationSugestion.findByIdAndDelete(approvationId)
+      })
+      await Promise.all(approvationsPromises)
+    }
+
+    next()
+  } catch (error) {
+    next(error)
+  }
+})
+
+export default mongoose.model('Suggestion', SuggestionSchema)
