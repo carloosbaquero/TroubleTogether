@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose'
 import countries from '../utils/countries.js'
+import config from '../../config.js'
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -52,6 +53,9 @@ const UserSchema = new mongoose.Schema({
     required: false,
     max: 30
   },
+  profPic: {
+    type: String
+  },
   roles: {
     type: [String],
     enum: ['user', 'admin', 'super_admin'],
@@ -66,5 +70,10 @@ const UserSchema = new mongoose.Schema({
 },
 { timestamps: true }
 )
+
+UserSchema.methods.setProfPic = function setProfPic (filename) {
+  const { HOST_DIR } = config
+  this.profPic = `${HOST_DIR}/public/profPic/${filename}`
+}
 
 export default mongoose.model('User', UserSchema)

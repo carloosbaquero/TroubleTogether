@@ -33,3 +33,15 @@ flex-grow: 1;
     grid-template-columns: 150px auto;
     gap: 20px;
 }
+
+.edit-prof-pic input {
+    display: none
+}
+
+.edit-prof-pic img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer
+}

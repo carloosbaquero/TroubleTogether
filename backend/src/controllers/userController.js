@@ -2,9 +2,12 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import Session from '../models/session.js'
-import { registerValidation, loginValidation, refreshTokenValidation } from './validations/userValidation.js'
+import { registerValidation, loginValidation, refreshTokenValidation, updateProfileValidation } from './validations/userValidation.js'
 import { generateTokens, verifyRefreshToken } from '../utils/utils.js'
 import PlannedTravel from '../models/plannedTravel.js'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
 
 export const register = async (req, res) => {
   try {
@@ -170,71 +173,54 @@ export const myProffile = async (req, res) => {
   }
 }
 
-// export const completeProfile = async (req, res) => {
-//   try {
-//     completeProfileValidation(req, res).then(async (res) => {
-//       if (res.statusCode !== 200) {
-//         return res
-//       } else {
-//         try {
-//           const user = await User.findById(req.user._id)
-//           user.name = req.body.name
-//           user.lastName = req.body.lastName
-//           user.description = req.body.description
-//           user.birthDate = req.body.birthDate
-//           user.country = req.body.country
-//           user.city = req.body.city
-//           user.languages = req.body.languages
-//           user.visitedCities = req.body.visitedCountries
+export const updateProfile = async (req, res) => {
+  try {
+    updateProfileValidation(req, res).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        try {
+          const user = await User.findById(req.user._id)
+          user.name = req.body.name ? req.body.name : user.name
+          user.lastName = req.body.lastName ? req.body.lastName : user.lastName
+          user.description = req.body.description ? req.body.description : user.description
+          user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
+          user.country = req.body.country ? req.body.country : user.country
+          user.city = req.body.city ? req.body.city : user.city
+          if (req.file) {
+            const { filename } = req.file
 
-//           const savedUser = await user.save()
+            if (user.profPic) {
+              const __filename = fileURLToPath(import.meta.url)
+              const __dirname = path.dirname(__filename)
+              const profPic = user.profPic.split('/').at(-1)
+              const oldFilePath = path.join(__dirname, '..', 'public', 'profPic', profPic)
+              console.log(oldFilePath)
+              fs.unlink(oldFilePath, (err) => {
+                if (err) {
+                  console.error('Error while deleting old image:', err)
+                } else {
+                  console.log('Old image successfully deleted')
+                }
+              })
+            }
+            user.setProfPic(filename)
+          }
 
-//           res.status(201).json({
-//             error: null,
-//             data: savedUser
-//           })
-//         } catch (error) {
-//           console.log(error)
-//           res.status(401).json({ error })
-//         }
-//       }
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: 'Internal Server Error' })
-//   }
-// }
+          const savedUser = await user.save()
 
-// export const updateProfile = async (req, res) => {
-//   try {
-//     updateProfileValidation(req, res).then(async (res) => {
-//       if (res.statusCode !== 200) {
-//         return res
-//       } else {
-//         try {
-//           const user = await User.findById(req.user._id)
-//           user.name = req.body.name ? req.body.name : user.name
-//           user.lastName = req.body.lastName ? req.body.lastName : user.lastName
-//           user.description = req.body.description ? req.body.description : user.description
-//           user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
-//           user.nationality = req.body.nationality ? req.body.nationality : user.nationality
-//           user.languages = req.body.languages ? req.body.languages : user.languages
-//           user.visitedCountries = req.body.visitedCountries ? req.body.visitedCountries : user.visitedCountries
-
-//           const savedUser = await user.save()
-
-//           res.status(201).json({
-//             error: null,
-//             data: savedUser
-//           })
-//         } catch (error) {
-//           console.log(error)
-//           res.status(401).json({ error })
-//         }
-//       }
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: 'Internal Server Error' })
-//   }
-// }
+          res.status(200).json({
+            error: null,
+            data: savedUser
+          })
+        } catch (error) {
+          console.log(error)
+          res.status(401).json({ error })
+        }
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
