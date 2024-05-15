@@ -40,7 +40,7 @@ const MyProffileScreen = () => {
   const handleEdit = async (values, { setSubmitting }) => {
     try {
       const formData = new FormData()
-      if (previewUrl !== '/default-profile-pic.jpg') formData.append('image', selectedFile)
+      if (previewUrl !== '/default-profile-pic.jpg' && previewUrl !== user?.profPic) formData.append('image', selectedFile)
       formData.append('description', values.description)
       formData.append('birthDate', values.birthDate)
       formData.append('city', values.city)

@@ -187,6 +187,10 @@ export const getTravelDashboard = async (req, res) => {
         path: 'requests',
         populate: { path: 'user' }
       })
+      .populate({
+        path: 'posts',
+        populate: { path: 'user' }
+      })
 
     res.status(200).json({ error: null, data: travel })
   } catch (err) {

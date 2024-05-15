@@ -135,7 +135,7 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
         <div className='dest-card-top'>
           <div className='atendee'>
             <div className='profile-picture-atendee'>
-              <img src='/login.png' alt='Profile' className='profile-picture__image' />
+              <img src={suggestionUser?.profPic ? suggestionUser.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
             </div>
             <p>{suggestionUser?.username}</p>
           </div>

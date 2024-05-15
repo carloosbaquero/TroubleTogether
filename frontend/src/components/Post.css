@@ -1,0 +1,75 @@
+.post {
+    max-width: 301px;
+    max-height: 600px;
+    border: 1px solid black;
+    margin: 20px;
+}
+
+.image-cont img{
+    max-width: 300px;
+    max-height: 300px;
+}
+
+.image-cont {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    width: 300px;
+    height: 300px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-cont input {
+    display: none
+}
+
+.add-post {
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    height: 300px;
+    width: 300px;
+    color: #3fc742;
+    cursor: pointer;
+}
+
+.add-post:hover {
+    color: #1a511b
+
+}
+
+.add-img:hover {
+    cursor: pointer;
+}
+
+.post-bottom {
+    padding: 5px;
+}
+
+.edit-dest-card textarea {
+    width: 100%;
+    height: 100px;
+    resize: none;
+}
+
+.post-top-icons {
+    justify-self: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .post-card-top {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+p {
+    word-wrap: break-word; /* Permite que las palabras largas se rompan y se ajusten dentro del contenedor */
+    white-space: normal; /* Asegura que el texto se ajuste al ancho del contenedor */
+}
+
+div {
+    overflow: hidden; /* Esto recortará cualquier contenido que se salga del div */
+}

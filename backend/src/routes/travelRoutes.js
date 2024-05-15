@@ -1,6 +1,8 @@
 import express from 'express'
 import { addDailyItinerary, addDestination, addSuggestion, changeState, createTravel, deleteDailyItinerary, deleteDestination, deleteSuggestion, deleteTravel, dislikeSuggestion, getTravelDashboard, getTravelInfo, getTravels, likeSuggestion, updateDailyItinerary, updateDestination, updateSuggestion, updateTravel } from '../controllers/travelController.js'
 import { isLogged, isOrganizer, isParticipant } from '../middlewares/authMiddlewares.js'
+import { uploadPost } from '../utils/upload.js'
+import { addPost, deletePost } from '../controllers/postController.js'
 
 const travelRoutes = express.Router()
 
@@ -45,5 +47,11 @@ travelRoutes.route('/dashboard/:id/suggestion/:sugId/like')
 
 travelRoutes.route('/dashboard/:id/suggestion/:sugId/dislike')
   .post(isLogged, isParticipant, dislikeSuggestion)
+
+travelRoutes.route('/dashboard/:id/post')
+  .post(isLogged, isParticipant, uploadPost.single('image'), addPost)
+
+travelRoutes.route('/dashboard/:id/post/:postId')
+  .delete(isLogged, isParticipant, deletePost)
 
 export default travelRoutes

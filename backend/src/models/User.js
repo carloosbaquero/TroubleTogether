@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 import countries from '../utils/countries.js'
 import config from '../../config.js'
 
@@ -60,13 +60,7 @@ const UserSchema = new mongoose.Schema({
     type: [String],
     enum: ['user', 'admin', 'super_admin'],
     default: ['user']
-  },
-  plannedTravels: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'PlannedTravel'
-    }
-  ]
+  }
 },
 { timestamps: true }
 )

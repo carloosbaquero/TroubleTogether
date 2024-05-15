@@ -76,6 +76,12 @@ const PlannedTravelSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Request'
     }
+  ],
+  posts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Post'
+    }
   ]
 },
 { timestamps: true }
