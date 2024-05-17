@@ -54,7 +54,8 @@ const UserSchema = new mongoose.Schema({
     max: 30
   },
   profPic: {
-    type: String
+    type: String,
+    default: '/default-profile-pic.jpg'
   },
   roles: {
     type: [String],

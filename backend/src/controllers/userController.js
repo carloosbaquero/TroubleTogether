@@ -8,6 +8,7 @@ import PlannedTravel from '../models/plannedTravel.js'
 import path from 'path'
 import fs from 'fs'
 import { fileURLToPath } from 'url'
+import Post from '../models/post.js'
 
 export const register = async (req, res) => {
   try {
@@ -163,10 +164,16 @@ export const myProffile = async (req, res) => {
   const userId = req.user._id
   try {
     const user = await User.findById(userId)
-    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').sort({ startDate: 'asc' })
-    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').sort({ startDate: 'asc' })
+    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const posts = await Post.find({ user: userId }).populate('likes').populate('user')
+      .populate({
+        path: 'comments',
+        populate: { path: 'user' }
+      })
+      .sort({ createdAt: 'desc' })
 
-    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending } })
+    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending, posts } })
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })
@@ -221,6 +228,32 @@ export const updateProfile = async (req, res) => {
     })
   } catch (error) {
     console.log(error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const searchUsersAndPosts = async (req, res) => {
+  try {
+    const search = req.query.search
+
+    const removeAccents = (str) => {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    }
+
+    const searchNoAccents = removeAccents(search)
+
+    const users = await User.find({ username: { $regex: searchNoAccents, $options: 'i' } })
+    const userIds = users.map(user => user._id)
+    const posts = await Post.find({ user: { $in: userIds } }).populate('user').populate('likes')
+      .populate({
+        path: 'comments',
+        populate: { path: 'user' }
+      })
+      .sort({ createdAt: 'desc' })
+
+    return res.status(200).json({ error: null, data: { users, posts } })
+  } catch (err) {
+    console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })
   }
 }

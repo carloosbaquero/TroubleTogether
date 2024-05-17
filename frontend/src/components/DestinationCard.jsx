@@ -3,16 +3,14 @@ import PropTypes from 'prop-types'
 import './DestinationCard.css'
 import { GrEdit } from 'react-icons/gr'
 import { MdDelete } from 'react-icons/md'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import countries from '../utils/countries'
 import api from '../utils/api'
-import Loader from './Loader'
 import Modal from 'react-modal'
 
 const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, countryProp, hotelProp, startDateProp, endDateProp, dash, organizer, destinationsCount, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
-  const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [city, setCity] = useState(cityProp)
   const [country, setCountry] = useState(countryProp)
@@ -74,16 +72,6 @@ const DestinationCard = ({ handleReload, travelId, destId, index, cityProp, coun
     } catch (err) {
 
     }
-  }
-
-  useEffect(() => {
-    if (travelId && startDate && endDate && input) {
-      setLoading(false)
-    }
-  }, [travelId, startDate, endDate, input])
-
-  if (loading) {
-    return (<Loader />)
   }
 
   return (

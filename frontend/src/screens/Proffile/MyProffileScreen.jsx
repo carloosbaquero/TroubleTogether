@@ -12,11 +12,13 @@ import Modal from 'react-modal'
 import * as Yup from 'yup'
 import countries from '../../utils/countries'
 import parseDate from '../../utils/parseDate'
+import Post from '../../components/Post'
 
 const MyProffileScreen = () => {
   const [user, setUser] = useState({})
   const [atendingTravels, setAtendingTravels] = useState([])
   const [organizedTravels, setOrganizedTravels] = useState([])
+  const [posts, setPosts] = useState([])
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
   const [input, setInput] = useState()
@@ -24,6 +26,7 @@ const MyProffileScreen = () => {
   const [shouldReload, setShouldReload] = useState(false)
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('/default-profile-pic.jpg')
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
 
   const validationSchema = Yup.object().shape({
     image: Yup.string(),
@@ -35,6 +38,14 @@ const MyProffileScreen = () => {
 
   const handleReload = () => {
     setShouldReload(prevState => !prevState)
+  }
+
+  const handleMediaQueryChanges = (mediaQuery) => {
+    if (mediaQuery.matches) {
+      setIsSmallScreen(true)
+    } else {
+      setIsSmallScreen(false)
+    }
   }
 
   const handleEdit = async (values, { setSubmitting }) => {
@@ -74,10 +85,10 @@ const MyProffileScreen = () => {
     {
       title: 'Planning Travels',
       content:
-  <div className='travel-cards-container'>
+  <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
     {organizedTravels.concat(atendingTravels).filter(t => t.state === 'Planning').length > 0
       ? (organizedTravels.concat(atendingTravels).filter(t => t.state === 'Planning').map((travel, index) => {
-          return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} />
+          return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} profPic={travel.organizerId.profPic} />
         })
         )
       : (
@@ -90,10 +101,10 @@ const MyProffileScreen = () => {
     {
       title: 'Planned Travels',
       content:
-  <div className='travel-cards-container'>
+  <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
     {organizedTravels.concat(atendingTravels).filter(t => t.state === 'Planned').length > 0
       ? (organizedTravels.concat(atendingTravels).filter(t => t.state === 'Planned').map((travel, index) => {
-          return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} />
+          return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} profPic={travel.organizerId.profPic} />
         })
         )
       : (
@@ -104,7 +115,23 @@ const MyProffileScreen = () => {
 
   </div>
     },
-    { title: 'Posts', content: <div>To implement 3</div> }
+    {
+      title: 'Posts',
+      content:
+  <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
+    {posts.length
+      ? posts.map((value, index) => {
+        return <Post key={index} postId={value._id} travelId={value.travel} user={{ userId: user._id, username: user.username, profPic: user.profPic }} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} />
+      })
+
+      : (
+        <>
+          <h4>This user has no posts yet</h4>
+        </>
+        )}
+
+  </div>
+    }
   ]
 
   useEffect(() => {
@@ -117,12 +144,21 @@ const MyProffileScreen = () => {
         setAtendingTravels(data.data.travelsAtending)
         setOrganizedTravels(data.data.travelsOrganizing)
         setUser(data.data.user)
+        setPosts(data.data.posts)
         setLoading(false)
       } catch (err) {
         console.log(err)
       }
     }
     fetchUserData()
+
+    const mediaQuery = window.matchMedia('(max-width: 700px)')
+    mediaQuery.addEventListener('change', handleMediaQueryChanges)
+    handleMediaQueryChanges(mediaQuery)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaQueryChanges)
+    }
   }, [shouldReload])
 
   if (loading) {
@@ -147,6 +183,7 @@ const MyProffileScreen = () => {
             <Form className='create-travel' style={{ marginTop: '0px' }}>
               <h1>Edit your proffile</h1>
               <div>
+                <label>Picture:</label>
                 <div className='edit-prof-pic'>
                   <input
                     type='file'
@@ -218,15 +255,12 @@ const MyProffileScreen = () => {
                 <h4>{user?.city}, {user.country}</h4>
               </div>
 
-              <div>
+              <div className='desc-cont'>
                 <h6>Description:</h6>
                 <p>{user?.description ? user?.description : 'No description'}</p>
               </div>
-
             </div>
-
           </div>
-
         </div>
         <br />
         <br />

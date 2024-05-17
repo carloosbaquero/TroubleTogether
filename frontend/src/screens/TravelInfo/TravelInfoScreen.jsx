@@ -9,6 +9,7 @@ import DestinationCard from '../../components/DestinationCard'
 import { getAccessToken, getRefreshToken } from '../../utils/authHelpers'
 import Modal from 'react-modal'
 import Loader from '../../components/Loader'
+import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 const TravelInfoScreen = () => {
   const [travelInfo, setTravelInfo] = useState({})
@@ -20,6 +21,8 @@ const TravelInfoScreen = () => {
   const [userId, setUserId] = useState('')
   const [requested, setRequested] = useState(false)
   const [shouldNavigate, setShouldNavigate] = useState(false)
+  const [showAtendees, setShowAtendees] = useState(false)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
 
   const navigate = useNavigate()
 
@@ -37,6 +40,14 @@ const TravelInfoScreen = () => {
     } catch (err) {
       console.log(err)
       setErrorRequest(true)
+    }
+  }
+
+  const handleMediaQueryChanges = (mediaQuery) => {
+    if (mediaQuery.matches) {
+      setIsSmallScreen(true)
+    } else {
+      setIsSmallScreen(false)
     }
   }
 
@@ -68,6 +79,14 @@ const TravelInfoScreen = () => {
     }
 
     getTravelInfo()
+
+    const mediaQuery = window.matchMedia('(max-width: 650px)')
+    mediaQuery.addEventListener('change', handleMediaQueryChanges)
+    handleMediaQueryChanges(mediaQuery)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaQueryChanges)
+    }
   }, [travelId, requested, userId])
 
   useEffect(() => {
@@ -124,7 +143,7 @@ const TravelInfoScreen = () => {
                       <p>Do you want to request to join this trip?</p>
                       <br />
                       <div className='modal-buttons'>
-                        <button className='green-button' onClick={() => setShowModal(false)}>Cancel</button>
+                        <button className='red-button' onClick={() => setShowModal(false)}>Cancel</button>
                         <button className='green-button' onClick={handleRequest}>Request</button>
                       </div>
                     </>
@@ -148,6 +167,14 @@ const TravelInfoScreen = () => {
             <br />
             <h5>Start: {parseDate(travelInfo.startDate)}</h5>
             <h5>End: {parseDate(travelInfo.endDate)}</h5>
+            <div className='status'>
+              {!(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) && !requested && travelInfo.state === 'Planning' &&
+                <button className='green-button' onClick={() => setShowModal(true)}>Request to join</button>}
+
+              {requested && travelInfo.state === 'Planning' && !(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) &&
+                <p className='requested'>Your request needs to be reviewed</p>}
+            </div>
+            <br />
             <hr />
             <h2>Destinations</h2>
             <div className='destinations'>
@@ -158,14 +185,16 @@ const TravelInfoScreen = () => {
               })}
             </div>
           </div>
-          <div className='atendees'>
-            <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
-            {!(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) && !requested && travelInfo.state === 'Planning' &&
-              <button className='green-button' onClick={() => setShowModal(true)}>Request to join</button>}
+          {!showAtendees && <button className='vertical-green-button' onClick={() => setShowAtendees(true)}><MdKeyboardDoubleArrowLeft /> SHOW ATENDEES <MdKeyboardDoubleArrowLeft /></button>}
+          {showAtendees &&
+            <div className='atendees-with-button'>
+              <button className='vertical-red-button' onClick={() => setShowAtendees(false)}> <MdKeyboardDoubleArrowRight /> HIDE ATENDEES <MdKeyboardDoubleArrowRight /></button>
+              <div className='atendees'>
 
-            {requested && travelInfo.state === 'Planning' && !(userId === travelInfo.organizerId._id || travelInfo.atendees.some(atendee => atendee._id === userId)) &&
-              <p>Your request needs to be reviewed</p>}
-          </div>
+                <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
+
+              </div>
+            </div>}
         </div>
       </div>
     </>

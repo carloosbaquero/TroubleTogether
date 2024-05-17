@@ -16,6 +16,7 @@ import * as Yup from 'yup'
 import ItineraryDashboard from '../../components/ItineraryDashboard'
 import SuggestionDashboard from '../../components/SuggestionDashboard'
 import PostDashboard from '../../components/PostDashboard'
+import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 const TravelDashboard = () => {
   const [travelInfo, setTravelInfo] = useState({})
@@ -32,6 +33,8 @@ const TravelDashboard = () => {
   const navigate = useNavigate()
   const [shouldNavigate, setShouldNavigate] = useState(false)
   const [shouldReload, setShouldReload] = useState(false)
+  const [showAtendees, setShowAtendees] = useState(false)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -62,6 +65,14 @@ const TravelDashboard = () => {
       setEditError(err.response.data.error)
     } finally {
       setSubmitting(true)
+    }
+  }
+
+  const handleMediaQueryChanges = (mediaQuery) => {
+    if (mediaQuery.matches) {
+      setIsSmallScreen(true)
+    } else {
+      setIsSmallScreen(false)
     }
   }
 
@@ -132,6 +143,14 @@ const TravelDashboard = () => {
     }
 
     getTravelInfo()
+
+    const mediaQuery = window.matchMedia('(max-width: 650px)')
+    mediaQuery.addEventListener('change', handleMediaQueryChanges)
+    handleMediaQueryChanges(mediaQuery)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaQueryChanges)
+    }
   }, [travelId, navigate, shouldReload])
 
   useEffect(() => {
@@ -161,7 +180,7 @@ const TravelDashboard = () => {
             zIndex: 3
           },
           content: {
-            width: '420px',
+            width: isSmallScreen ? '320px' : '420px',
             height: '250px',
             margin: 'auto'
           }
@@ -297,15 +316,23 @@ const TravelDashboard = () => {
               <div className='status'>
                 <button className='green-button' onClick={() => setShowModalState(true)}>Mark as {travelInfo.state === 'Planning' ? 'Planned' : 'Planning'}</button>
               </div>}
+            {travelInfo && travelInfo.atendees.some(atendee => atendee._id === userId) && travelInfo.state === 'Planning' &&
+              <div className='status'>
+                <button className='red-button' onClick={() => setShowModal(true)}>Leave travel</button>
+              </div>}
+
             <br />
             <hr />
             <Tabs tabs={tabs} />
 
           </div>
-          <div className='atendees'>
-            <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
-            {travelInfo && travelInfo.atendees.some(atendee => atendee._id === userId) && travelInfo.state === 'Planning' && <button className='red-button' onClick={() => setShowModal(true)}>Leave travel</button>}
-          </div>
+          {!showAtendees && <button className='vertical-green-button' onClick={() => setShowAtendees(true)}><MdKeyboardDoubleArrowLeft /> SHOW ATENDEES <MdKeyboardDoubleArrowLeft /></button>}
+          {showAtendees &&
+            <div className='atendees-with-button'>
+              <button className='vertical-red-button' onClick={() => setShowAtendees(false)}> <MdKeyboardDoubleArrowRight /> HIDE ATENDEES <MdKeyboardDoubleArrowRight /></button>
+
+              <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
+            </div>}
         </div>
       </div>
     </>

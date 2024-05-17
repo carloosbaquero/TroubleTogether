@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import parseDate from '../utils/parseDate'
 import { useNavigate } from 'react-router-dom'
 
-const TravelCard = ({ id, name, startDate, endDate, destinations, atendees, maxAtendees }) => {
+const TravelCard = ({ id, name, startDate, endDate, destinations, atendees, maxAtendees, profPic }) => {
   const navigate = useNavigate()
 
   const handleClick = () => {
@@ -13,7 +13,7 @@ const TravelCard = ({ id, name, startDate, endDate, destinations, atendees, maxA
   return (
     <div className='travel-card' onClick={handleClick}>
       <div className='profile-picture'>
-        <img src='/login.png' alt='Profile' className='profile-picture__image' />
+        <img src={profPic || '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
       </div>
 
       <h4>{name}</h4>

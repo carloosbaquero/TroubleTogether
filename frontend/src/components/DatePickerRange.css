@@ -13,6 +13,14 @@
     flex: 1; /* Hace que los wrappers ocupen igual espacio */
     margin-bottom: 300px;
   }
+
+  .date-picker-wrapper-small {
+    margin-right: 5px; /* Ajusta el margen entre los calendarios según sea necesario */
+    margin-left: 5px; /* Ajusta el margen entre los calendarios según sea necesario */
+    flex: 1; /* Hace que los wrappers ocupen igual espacio */
+    margin-bottom: 300px;
+  }
+
   .modal-dates {
   display: grid;
   grid-template-rows: auto auto auto;

@@ -14,7 +14,7 @@ const AtendeesList = ({ organizer, atendees, maxAtendees, minAtendees }) => {
       <div className='atendees'>
         <div className='atendee'>
           <div className='profile-picture-atendee'>
-            <img src='/login.png' alt='Profile' className='profile-picture__image' />
+            <img src={organizer.profPic ? organizer.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
           </div>
           <p>{organizer.username} <AiFillStar /></p>
         </div>
@@ -22,7 +22,7 @@ const AtendeesList = ({ organizer, atendees, maxAtendees, minAtendees }) => {
           return (
             <div key={index} className='atendee'>
               <div className='profile-picture-atendee'>
-                <img src='/login.png' alt='Profile' className='profile-picture__image' />
+                <img src={value.profPic ? value.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
               </div>
               <p>{value.username}</p>
             </div>

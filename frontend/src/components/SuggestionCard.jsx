@@ -6,13 +6,11 @@ import { BiDislike, BiLike, BiSolidDislike, BiSolidLike } from 'react-icons/bi'
 import { MdDelete } from 'react-icons/md'
 import { useEffect, useState } from 'react'
 import api from '../utils/api'
-import Loader from './Loader'
 import Modal from 'react-modal'
 
 const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, descriptionProp, dash, participant, approvationsProp, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
-  const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [description, setDescription] = useState(descriptionProp)
   const [approvations, setApprovations] = useState(approvationsProp)
@@ -89,16 +87,9 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
   }
 
   useEffect(() => {
-    if (travelId && description && input) {
-      setLoading(false)
-    }
     setLikes(approvations.filter(a => a.like).length)
     setDislikes(approvations.filter(a => a.dislike).length)
   }, [travelId, description, input, approvations])
-
-  if (loading) {
-    return (<Loader />)
-  }
 
   return (
     <>
@@ -131,7 +122,11 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
           <>
             <p className='error-message'>{editError}</p>
           </>}
-
+        {dash && participant?.userId === suggestionUser?._id && editMode &&
+          <div className='dest-card-icons'>
+            <button className='green-button' onClick={handleApply}>Apply</button>
+            <button className='red-button' onClick={handleCancel}>Cancel</button>
+          </div>}
         <div className='dest-card-top'>
           <div className='atendee'>
             <div className='profile-picture-atendee'>
@@ -144,13 +139,8 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
               <GrEdit onClick={() => setEditMode(true)} className='edit-icon' />
               <MdDelete onClick={() => setShowModal(true)} className='edit-icon' />
             </div>}
-          {dash && participant?.userId === suggestionUser?._id && editMode &&
-            <div className='dest-card-icons'>
-              <button className='green-button' onClick={handleApply}>Apply</button>
-              <button className='red-button' onClick={handleCancel}>Cancel</button>
-            </div>}
-
         </div>
+        <br />
         {editMode
           ? (
             <>

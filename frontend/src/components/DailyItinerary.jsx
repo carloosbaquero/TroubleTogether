@@ -3,15 +3,13 @@ import PropTypes from 'prop-types'
 import './DailyItinerary.css'
 import { GrEdit } from 'react-icons/gr'
 import { MdDelete } from 'react-icons/md'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import api from '../utils/api'
-import Loader from './Loader'
 import Modal from 'react-modal'
 
 const DailyItinerary = ({ handleReload, travelId, itineraryId, index, itineraryProp, dateProp, dash, organizer, planned }) => {
   const [editMode, setEditMode] = useState(false)
   const [editError, setEditError] = useState('')
-  const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [itinerary, setItinerary] = useState(itineraryProp)
   const [date, setDate] = useState(dateProp)
@@ -61,16 +59,6 @@ const DailyItinerary = ({ handleReload, travelId, itineraryId, index, itineraryP
     } catch (err) {
 
     }
-  }
-
-  useEffect(() => {
-    if (travelId && date && input) {
-      setLoading(false)
-    }
-  }, [travelId, date, input])
-
-  if (loading) {
-    return (<Loader />)
   }
 
   return (

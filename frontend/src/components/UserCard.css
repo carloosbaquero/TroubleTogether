@@ -1,0 +1,29 @@
+.user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    flex-direction: column;
+    border: 2px solid black;
+    height: 400px;
+    width: 301px;
+    margin: 20px;
+    transition: transform 0.3s ease;
+}
+
+.user:hover {
+    transform: scale(1.03);
+}
+
+.user-profPic {
+    width: 150px; /* ajusta el tamaño según tus necesidades */
+    height: 150px; /* ajusta el tamaño según tus necesidades */
+    border-radius: 50%;
+  }
+
+
+  @media (max-width: 600px) {
+    .user {
+        margin-left: 0px;
+    }
+}

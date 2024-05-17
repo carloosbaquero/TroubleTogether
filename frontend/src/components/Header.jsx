@@ -10,8 +10,9 @@ import { GrPlan } from 'react-icons/gr'
 
 const Header = () => {
   const navigate = useNavigate()
-  const [isNavVisible, setIsNavVisible] = useState(true)
-
+  const [isNavVisible, setIsNavVisible] = useState(false)
+  const [userId, setUserId] = useState('')
+  const [profPic, setProfPic] = useState('/default-profile-pic.jpg')
   const [isSmallScreen, setIsSmallScreen] = useState(false)
 
   const handleLogout = async () => {
@@ -41,7 +42,19 @@ const Header = () => {
   }
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 500px)')
+    const getUser = async () => {
+      try {
+        if (getAccessToken() && getRefreshToken()) {
+          const { data } = await api.get('/users/whoami')
+          setUserId(data.data.userId)
+          setProfPic(data.data.profPic)
+        }
+      } catch (err) {
+        console.log(err)
+      }
+    }
+    getUser()
+    const mediaQuery = window.matchMedia('(max-width: 900px)')
     mediaQuery.addEventListener('change', handleMediaQueryChanges)
     handleMediaQueryChanges(mediaQuery)
 
@@ -57,16 +70,17 @@ const Header = () => {
         <nav className='nav-header'>
           <div className='nav-button' onClick={() => navigate('/globetrotters')}><span><IoHomeOutline /> Home</span></div>
           <div className='nav-button' onClick={() => navigate('/globetrotters/travels')}><span><MdOutlineTravelExplore /> Search for a travel</span></div>
-          <div className='nav-button' onClick={() => navigate('/globetrotters/travels')}><span><ImUsers /> Community</span></div>
+          <div className='nav-button' onClick={() => navigate('/globetrotters/community')}><span><ImUsers /> Community</span></div>
           <div className='nav-button' onClick={() => navigate('/globetrotters/create-travel')}><span><GrPlan /> Plan your next travel</span></div>
-          <div className='nav-button' onClick={() => navigate('/globetrotters/my-proffile')}>
-            <div className='profile-picture-header'>
-              <img src='/login.png' alt='Profile' className='profile-picture__image' />
-            </div>
-            <span>
-              My Proffile
-            </span>
-          </div>
+          {userId &&
+            <div className='nav-button' onClick={() => navigate('/globetrotters/my-proffile')}>
+              <div className='profile-picture-header'>
+                <img src={profPic || '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
+              </div>
+              <span>
+                My Profile
+              </span>
+            </div>}
           {getAccessToken() && getRefreshToken()
             ? <div className='logout-button' onClick={handleLogout}><span><MdLogout /> Log out</span></div>
             : <div className='login-button' onClick={() => navigate('/globetrotters/sign')}><span><MdLogin /> Sign in</span></div>}

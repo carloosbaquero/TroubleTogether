@@ -16,6 +16,7 @@ const CommentSchema = new Schema({
     required: true,
     ref: 'Post'
   }
-})
+},
+{ timestamps: true })
 
 export default mongoose.model('Comment', CommentSchema)

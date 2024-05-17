@@ -2,7 +2,7 @@ import express from 'express'
 import { addDailyItinerary, addDestination, addSuggestion, changeState, createTravel, deleteDailyItinerary, deleteDestination, deleteSuggestion, deleteTravel, dislikeSuggestion, getTravelDashboard, getTravelInfo, getTravels, likeSuggestion, updateDailyItinerary, updateDestination, updateSuggestion, updateTravel } from '../controllers/travelController.js'
 import { isLogged, isOrganizer, isParticipant } from '../middlewares/authMiddlewares.js'
 import { uploadPost } from '../utils/upload.js'
-import { addPost, deletePost } from '../controllers/postController.js'
+import { addComment, addPost, deleteComment, deletePost, getAllPosts, likePost } from '../controllers/postController.js'
 
 const travelRoutes = express.Router()
 
@@ -53,5 +53,15 @@ travelRoutes.route('/dashboard/:id/post')
 
 travelRoutes.route('/dashboard/:id/post/:postId')
   .delete(isLogged, isParticipant, deletePost)
+  .post(isLogged, likePost)
+
+travelRoutes.route('/dashboard/:id/post/:postId/comment')
+  .post(isLogged, addComment)
+
+travelRoutes.route('/dashboard/:id/post/:postId/comment/:comId')
+  .delete(isLogged, deleteComment)
+
+travelRoutes.route('/posts')
+  .get(getAllPosts)
 
 export default travelRoutes

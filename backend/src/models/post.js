@@ -37,6 +37,22 @@ const PostSchema = new Schema({
       ref: 'Comment'
     }
   ]
+},
+{ timestamps: true }
+)
+
+PostSchema.pre('save', async function (next) {
+  try {
+    const commentsPromises = this.comments.map(async (commentId) => {
+      return await Comment.findById(commentId)
+    })
+    this.comments = await Promise.all(commentsPromises)
+    this.comments.sort((a, b) => b.createdAt - a.createdAt)
+
+    next()
+  } catch (error) {
+    next(error)
+  }
 })
 
 PostSchema.pre('deleteOne', { document: true, query: false }, async function (next) {

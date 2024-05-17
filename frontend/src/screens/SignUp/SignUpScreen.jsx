@@ -19,6 +19,7 @@ const SignUpScreen = () => {
   const [city, setCity] = useState('')
   const [country, setCountry] = useState('')
   const [errorSignUp, setErrorSignUp] = useState(null)
+  const [signUpSuccess, setSignUpSuccess] = useState(false)
 
   const navigate = useNavigate()
 
@@ -64,16 +65,18 @@ const SignUpScreen = () => {
         city,
         country
       })
-      console.log(data)
-      if (data.status === 200) {
-        console.log('success')
+      if (data.error === null) {
+        setSignUpSuccess(true)
+        setErrorSignUp('')
       } else {
         console.log(data.error)
-        setErrorLogIn(data.error)
+        setSignUpSuccess(false)
+        setErrorSignUp(data.error)
       }
     } catch (err) {
       console.log(err.response.data.error)
       setErrorSignUp(err.response.data.error)
+      setSignUpSuccess(false)
     }
   }
 
@@ -123,14 +126,14 @@ const SignUpScreen = () => {
             </div>
 
             <div className='input-line'>
-              <div className='input-field'>
+              <div className='input-field-small'>
                 <i className='fas fa-lock' />
                 <input value={city} type='text' placeholder='City' onChange={e => setCity(e.target.value)} />
               </div>
-              <div className='input-field'>
+              <div className='input-field-small'>
                 <i className='fas fa-lock' />
                 <select value={country} type='text' placeholder='Country' onChange={e => setCountry(e.target.value)}>
-                  <option value=''>Select a country</option>
+                  <option value=''>Country</option>
                   {countries.map((value, index) => {
                     return (
                       <option key={index} value={value}>{value}</option>
@@ -140,6 +143,7 @@ const SignUpScreen = () => {
               </div>
             </div>
             <p className='error-message'>{errorSignUp}</p>
+            {signUpSuccess && <p>Your account has been successfully registered! Please go to the Log In Screen</p>}
             <input type='submit' className='btn' value='Sign up' />
           </form>
         </div>

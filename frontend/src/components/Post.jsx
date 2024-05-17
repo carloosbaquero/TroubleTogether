@@ -6,15 +6,25 @@ import { FcLikePlaceholder, FcLike } from 'react-icons/fc'
 import api from '../utils/api'
 import Modal from 'react-modal'
 import { MdDelete } from 'react-icons/md'
+import Comment from './Comment'
+import { useNavigate } from 'react-router-dom'
 
-const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, handleReload, postUser }) => {
+const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, handleReload, postUser, postLikes, postComments }) => {
   const [selectedFile, setSelectedFile] = useState(null)
   const [previewUrl, setPreviewUrl] = useState('')
   const [error, setError] = useState('')
   const [showModalDelete, setShowModalDelete] = useState(false)
+  const [showModalComments, setShowModalComments] = useState(false)
+  const [likes, setLikes] = useState(postLikes)
+  const [comments, setComments] = useState(postComments)
+  const [showNotLogged, setShowNotLogged] = useState(false)
   const [input, setInput] = useState({
     description
   })
+
+  const navigate = useNavigate()
+
+  console.log(user)
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -73,8 +83,63 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
     }
   }
 
+  const handleLike = async () => {
+    try {
+      if (!user.userId) {
+        setShowNotLogged(true)
+      } else {
+        const { data } = await api.post(`/travels/dashboard/${travelId}/post/${postId}`)
+        if (data.error === null) {
+          setLikes(data.data.likes)
+        }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const handleAddComment = async () => {
+    try {
+      if (!user.userId && input.comment) {
+        setShowNotLogged(true)
+      } else if (input.comment !== '' && input.comment) {
+        const body = { comment: input.comment }
+        const { data } = await api.post(`/travels/dashboard/${travelId}/post/${postId}/comment`, body)
+        if (data.error === null) {
+          setComments(data.data.comments)
+          setInput({ description: input.description, comment: '' })
+        }
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <>
+      <Modal
+        isOpen={showNotLogged} style={{
+          overlay: {
+            zIndex: 5
+          },
+          content: {
+            width: '320px',
+            height: '200px',
+            margin: 'auto'
+          }
+        }}
+      >
+        <div>
+          <h3>Forbidden Action</h3>
+          <br />
+          <p>If you want to like or comment a post, you must Log In</p>
+          <br />
+          <div className='modal-buttons'>
+            <button className='red-button' onClick={() => setShowNotLogged(false)}>Don`t Log In</button>
+            <button className='green-button' onClick={() => navigate('/globetrotters/sign')}>Go Log In</button>
+          </div>
+        </div>
+      </Modal>
       <Modal
         isOpen={showModalDelete} style={{
           overlay: {
@@ -88,13 +153,46 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
         }}
       >
         <div>
-          <h3>Delete Daily Itinerary</h3>
+          <h3>Delete Post</h3>
           <br />
-          <p>Do you want to delete this daily itinerary?</p>
+          <p>Do you want to delete this post?</p>
           <br />
           <div className='modal-buttons'>
             <button className='green-button' onClick={() => setShowModalDelete(false)}>Go back</button>
             <button className='red-button' onClick={handleDelete}>Delete</button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showModalComments} style={{
+          overlay: {
+            zIndex: 3
+          },
+          content: {
+            maxWidth: '420px',
+            minHeight: '200px',
+            margin: 'auto'
+          }
+        }}
+      >
+        <div>
+          <h3>Comments</h3>
+          <br />
+          <div className='edit-dest-card'><textarea name='comment' type='text' placeholder='Write a comment...' value={input.comment} onChange={handleChange} /></div>
+          <br />
+          <div className='modal-buttons'>
+            <button className='green-button' style={{ cursor: !input.comment ? 'not-allowed' : 'pointer' }} onClick={handleAddComment}>Send comment </button>
+            <button className='red-button' onClick={() => setShowModalComments(false)}>Go back</button>
+          </div>
+          <br />
+          <hr />
+          <div>
+            {comments?.map((value, index) => {
+              return (
+                <Comment key={index} user={user} comment={value} comments={comments} setComments={setComments} travelId={travelId} postId={postId} />
+              )
+            })}
           </div>
         </div>
       </Modal>
@@ -177,10 +275,15 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
           {!add && <div className='edit-dest-card'><textarea name='itinerary-info' value={description} disabled /></div>}
           {!add &&
             <div className='dest-card-icons'>
-              <LiaCommentSolid onClick={handleAdd} />
-              <p>10</p>
-              <FcLikePlaceholder onClick={() => setAddMode(false)} />
-              <p>10</p>
+              <div className='dest-card-icons'>
+                <LiaCommentSolid className='edit-icon' onClick={() => setShowModalComments(true)} />
+                <p className='number-like'>{comments.length}</p>
+              </div>
+              <div className='dest-card-icons'>
+                {likes.filter(a => (a.user.toString() === user?.userId.toString())).length === 0 && <FcLikePlaceholder className='edit-icon' onClick={handleLike} />}
+                {likes.filter(a => (a.user.toString() === user?.userId.toString())).length === 1 && <FcLike className='edit-icon' onClick={handleLike} />}
+                <p className='number-like'>{likes.length}</p>
+              </div>
             </div>}
         </div>
       </div>

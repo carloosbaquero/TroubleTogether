@@ -44,7 +44,7 @@ const PostDashboard = ({ posts, travelId, handleReload, username, profPic, userI
           <Post handleReload={handleReload} travelId={travelId} user={{ username, profPic }} add setAddMode={setAddMode} />}
         {posts.map((value, index) => {
           return (
-            <Post key={index} handleReload={handleReload} postId={value._id} travelId={travelId} user={{ userId, username, profPic }} imageUrl={value.image} description={value.description} postUser={value.user} />
+            <Post key={index} handleReload={handleReload} postId={value._id} travelId={travelId} user={{ userId, username, profPic }} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} />
           )
         })}
       </div>

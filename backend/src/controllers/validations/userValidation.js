@@ -5,7 +5,7 @@ import countries from '../../utils/countries.js'
 
 export const registerValidation = async (req, res) => {
   const schemaRegister = Joi.object({
-    username: Joi.string().min(6).max(20).required().label('Username'),
+    username: Joi.string().pattern(/^[a-z0-9_]+$/).min(6).max(20).required().label('Username').messages({ 'string.pattern.base': 'username can only contain lowercase letters, digits and underscores.' }),
     email: Joi.string().min(6).max(100).required().email().label('Email'),
     password: Joi.string().min(8).max(1024).required().label('Password'),
     birthDate: Joi.date().max('now').required().label('Birth Date'),
