@@ -1,5 +1,6 @@
-import mongoose, { Schema } from 'mongoose'
+import mongoose from 'mongoose'
 import countries from '../utils/countries.js'
+import config from '../../config.js'
 
 const UserSchema = new mongoose.Schema({
   username: {
@@ -52,19 +53,22 @@ const UserSchema = new mongoose.Schema({
     required: false,
     max: 30
   },
+  profPic: {
+    type: String,
+    default: '/default-profile-pic.jpg'
+  },
   roles: {
     type: [String],
     enum: ['user', 'admin', 'super_admin'],
     default: ['user']
-  },
-  plannedTravels: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'PlannedTravel'
-    }
-  ]
+  }
 },
 { timestamps: true }
 )
+
+UserSchema.methods.setProfPic = function setProfPic (filename) {
+  const { HOST_DIR } = config
+  this.profPic = `${HOST_DIR}/public/profPic/${filename}`
+}
 
 export default mongoose.model('User', UserSchema)

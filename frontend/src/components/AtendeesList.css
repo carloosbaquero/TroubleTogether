@@ -29,6 +29,10 @@
     margin-top: 5px;
 }
 
+.username-atendee {
+    cursor: pointer;
+}
+
 .atendee p {
     margin-left: 20px;
     overflow: hidden;
@@ -42,4 +46,5 @@
     height: 35px; /* ajusta el tamaño según tus necesidades */
     border-radius: 50%;
     overflow: hidden;
+    cursor: pointer;
   }

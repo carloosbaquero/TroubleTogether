@@ -16,7 +16,7 @@ const HomeScreen = () => {
             <br />
             <p>Moreover, once you have planned your trip, you will have the option of sharing posts with the rest of the users in the community.</p>
             <br />
-            <p>You can start by <a href='/globetrotters/sign'>Signing In</a>.</p>
+            <p>You can start by <a href='/globetrotters/travels'>Searching for a travel</a> or by <a href='/globetrotters/create-travel'> Planning a travel by yourself</a> .</p>
           </div>
         </div>
 

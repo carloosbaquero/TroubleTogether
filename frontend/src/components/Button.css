@@ -25,3 +25,39 @@
 .red-button:hover {
     background-color: #7e0f0f;
 }
+
+.vertical-green-button {
+  writing-mode: vertical-rl; /* Establece la escritura vertical de derecha a izquierda */
+  text-orientation: mixed; /* Permite que el texto sea vertical */
+  white-space: nowrap; /* Evita que el texto se envuelva */
+  width: 25px; /* Ancho del botón */
+  border: none; /* Elimina el borde */
+  background-color: #3fc742; /* Color de fondo */
+  color: white; /* Color del texto */
+  font-size: 14px; /* Tamaño de fuente */
+  padding: 5px; /* Relleno */
+  cursor: pointer;
+  position: fixed;
+  right: 0;
+}
+
+.vertical-green-button:hover {
+  background-color: #1a511b;
+}
+
+.vertical-red-button {
+  writing-mode: vertical-rl; /* Establece la escritura vertical de derecha a izquierda */
+  text-orientation: mixed; /* Permite que el texto sea vertical */
+  white-space: nowrap; /* Evita que el texto se envuelva */
+  width: 25px; /* Ancho del botón */
+  border: none; /* Elimina el borde */
+  background-color: rgb(214, 53, 53);
+  color: white; /* Color del texto */
+  font-size: 14px; /* Tamaño de fuente */
+  padding: 5px; /* Relleno */
+  cursor: pointer;
+}
+
+.vertical-red-button:hover {
+  background-color: #7e0f0f;
+}

@@ -23,7 +23,7 @@ beforeAll(async () => {
   const country = 'Spain'
 
   const register = await request(app).post('/api/users/register').send({
-    username: 'testUser',
+    username: 'testuser',
     email: 'testemail@gmail.com',
     password: 'PassW123456',
     birthDate,
@@ -38,7 +38,7 @@ beforeAll(async () => {
   accessToken = login.body.data.accessToken
 
   const register2 = await request(app).post('/api/users/register').send({
-    username: 'testUser2',
+    username: 'testuser2',
     email: 'testemail2@gmail.com',
     password: 'PassW123456',
     birthDate,
@@ -53,7 +53,7 @@ beforeAll(async () => {
   accessToken2 = login2.body.data.accessToken
 
   await request(app).post('/api/users/register').send({
-    username: 'testUser3',
+    username: 'testuser3',
     email: 'testemail3@gmail.com',
     password: 'PassW123456',
     birthDate,

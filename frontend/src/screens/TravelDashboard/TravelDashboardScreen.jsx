@@ -15,6 +15,8 @@ import { Formik, Field, Form, ErrorMessage } from 'formik'
 import * as Yup from 'yup'
 import ItineraryDashboard from '../../components/ItineraryDashboard'
 import SuggestionDashboard from '../../components/SuggestionDashboard'
+import PostDashboard from '../../components/PostDashboard'
+import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from 'react-icons/md'
 
 const TravelDashboard = () => {
   const [travelInfo, setTravelInfo] = useState({})
@@ -27,9 +29,12 @@ const TravelDashboard = () => {
   const [loading, setLoading] = useState(true)
   const [userId, setUserId] = useState('')
   const [username, setUsername] = useState('')
+  const [profPic, setProfPic] = useState('/default-profile-pic.jpg')
   const navigate = useNavigate()
   const [shouldNavigate, setShouldNavigate] = useState(false)
   const [shouldReload, setShouldReload] = useState(false)
+  const [showAtendees, setShowAtendees] = useState(false)
+  const [isSmallScreen, setIsSmallScreen] = useState(false)
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -60,6 +65,14 @@ const TravelDashboard = () => {
       setEditError(err.response.data.error)
     } finally {
       setSubmitting(true)
+    }
+  }
+
+  const handleMediaQueryChanges = (mediaQuery) => {
+    if (mediaQuery.matches) {
+      setIsSmallScreen(true)
+    } else {
+      setIsSmallScreen(false)
     }
   }
 
@@ -114,6 +127,7 @@ const TravelDashboard = () => {
             if (!(data.data.userId === resTravelInfo.organizerId._id || resTravelInfo.atendees.some(atendee => atendee._id === data.data.userId))) {
               setShouldNavigate(true)
             } else {
+              if (data.data.profPic) setProfPic(data.data.profPic)
               setUsername(data.data.username)
               setLoading(false)
             }
@@ -129,6 +143,14 @@ const TravelDashboard = () => {
     }
 
     getTravelInfo()
+
+    const mediaQuery = window.matchMedia('(max-width: 650px)')
+    mediaQuery.addEventListener('change', handleMediaQueryChanges)
+    handleMediaQueryChanges(mediaQuery)
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaQueryChanges)
+    }
   }, [travelId, navigate, shouldReload])
 
   useEffect(() => {
@@ -148,7 +170,7 @@ const TravelDashboard = () => {
     { title: 'Suggestions', content: <SuggestionDashboard handleReload={handleReload} participant={{ userId, username }} travelInfo={travelInfo} planned={travelInfo.state === 'Planned'} /> },
     travelInfo.state === 'Planning'
       ? { title: 'Requests', content: <RequestsDashboard travelInfo={travelInfo} /> }
-      : { title: 'Posts', content: <div /> }
+      : { title: 'Posts', content: <PostDashboard handleReload={handleReload} posts={travelInfo.posts} travelId={travelInfo._id} username={username} profPic={profPic} userId={userId} /> }
   ]
   return (
     <>
@@ -158,7 +180,7 @@ const TravelDashboard = () => {
             zIndex: 3
           },
           content: {
-            width: '420px',
+            width: isSmallScreen ? '320px' : '420px',
             height: '250px',
             margin: 'auto'
           }
@@ -173,7 +195,7 @@ const TravelDashboard = () => {
                 <p>When you have marked your travel as Planned, you will not be able to edit your travel and all the atendees will have the option of uploading posts about this travel</p>
                 <br />
                 <div className='modal-buttons'>
-                  <button className='red-button' onClick={() => setShowModal(false)}>Cancel</button>
+                  <button className='red-button' onClick={() => setShowModalState(false)}>Cancel</button>
                   <button className='green-button' onClick={handleChangeState}>Mark travel as Planned</button>
                 </div>
               </>
@@ -185,7 +207,7 @@ const TravelDashboard = () => {
                 <p>When you have marked your travel as Planning, you will be able to edit your travel, but you will not be able to upload or view the posts that were made</p>
                 <br />
                 <div className='modal-buttons'>
-                  <button className='red-button' onClick={() => setShowModal(false)}>Cancel</button>
+                  <button className='red-button' onClick={() => setShowModalState(false)}>Cancel</button>
                   <button className='green-button' onClick={handleChangeState}>Mark travel as Planning</button>
                 </div>
               </>
@@ -294,15 +316,23 @@ const TravelDashboard = () => {
               <div className='status'>
                 <button className='green-button' onClick={() => setShowModalState(true)}>Mark as {travelInfo.state === 'Planning' ? 'Planned' : 'Planning'}</button>
               </div>}
+            {travelInfo && travelInfo.atendees.some(atendee => atendee._id === userId) && travelInfo.state === 'Planning' &&
+              <div className='status'>
+                <button className='red-button' onClick={() => setShowModal(true)}>Leave travel</button>
+              </div>}
+
             <br />
             <hr />
             <Tabs tabs={tabs} />
 
           </div>
-          <div className='atendees'>
-            <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
-            {travelInfo && travelInfo.atendees.some(atendee => atendee._id === userId) && travelInfo.state === 'Planning' && <button className='red-button' onClick={() => setShowModal(true)}>Leave travel</button>}
-          </div>
+          {!showAtendees && <button className='vertical-green-button' onClick={() => setShowAtendees(true)}><MdKeyboardDoubleArrowLeft /> SHOW ATENDEES <MdKeyboardDoubleArrowLeft /></button>}
+          {showAtendees &&
+            <div className='atendees-with-button'>
+              <button className='vertical-red-button' onClick={() => setShowAtendees(false)}> <MdKeyboardDoubleArrowRight /> HIDE ATENDEES <MdKeyboardDoubleArrowRight /></button>
+
+              <AtendeesList organizer={travelInfo.organizerId} maxAtendees={travelInfo.maxAtendees} minAtendees={travelInfo.minAtendees} atendees={travelInfo.atendees} />
+            </div>}
         </div>
       </div>
     </>

@@ -1,12 +1,10 @@
 .contents {
     margin-top: 190px;
     margin-left: 20px;
-    margin-right: 20px;
 }
 
 .travel-info {
     display: grid;
-    grid-template-columns: 2fr 1fr;
     margin: 10px;
 }
 
@@ -17,25 +15,47 @@
 
 .info {
     grid-column: 1;
+    overflow: hidden;
+    
+    margin-right: 20px;
 }
 
 .info h5 {
     overflow-wrap: break-word; /* Para navegadores modernos */
     word-wrap: break-word;
-    width: 100%;
+}
+
+.atendees-with-button {
+    display: flex;
+    height: auto;
+    justify-self: end;
+    position: fixed;
 }
 
 .atendees {
-    grid-column: 2;
+    height: auto;
     justify-self: end;
 }
 
 .destinations {
-    display: grid;
-    grid-template-columns: auto auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    padding: 10px;
 }
 
 .request-modal {
     width: 100px;
     height: 120px;
 }
+
+.requested {
+    border: 1px solid black;
+    padding: 2px;
+}
+
+@media (max-width: 900px) {
+    .contents {
+      margin-top: 100px;
+    }
+  }

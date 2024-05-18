@@ -1,8 +1,7 @@
 .myproffile {
-    margin-top: 190px;
-    margin-left: 100px;
-    margin-right: 100px;
-
+    margin-top: 200px;
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .myprofile-image {
@@ -32,4 +31,47 @@ flex-grow: 1;
     display: grid;
     grid-template-columns: 150px auto;
     gap: 20px;
+}
+
+.edit-prof-pic input {
+    display: none
+}
+
+.edit-prof-pic img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer
+}
+
+.desc-cont {
+    overflow: hidden;
+}
+
+@media (max-width: 900px) {
+    .myproffile {
+        margin-top: 100px;
+    }
+}
+
+@media (max-width: 700px) {
+    .myproffile {
+        display: flex;
+        flex-direction: column;
+    }
+    .myprofile-image {
+        position: sticky;
+      }
+      .myproffile-cont {
+        justify-content: center;
+        flex-direction: column; 
+    }
+    .myproffile-info {
+        margin-left: 0px;
+    }
+    .myproffile-subinfo {
+        display: flex;
+        flex-direction: column;
+    }
 }

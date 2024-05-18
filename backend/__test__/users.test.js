@@ -30,7 +30,7 @@ afterAll(async () => {
 describe('POST /api/users/register', () => {
   it('should not create an user with incorrect email', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser',
+      username: 'testuser',
       email: 'testemailgmail.com',
       password: 'PassW123456',
       birthDate,
@@ -44,7 +44,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should not create an user with no email', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser',
+      username: 'testuser',
       password: 'PassW123456',
       birthDate,
       city,
@@ -57,7 +57,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should not create an user with incorrect password', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser',
+      username: 'testuser',
       email: 'testemailgmail.com',
       password: 'pass123456',
       birthDate,
@@ -71,7 +71,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should not create an user with no password', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser',
+      username: 'testuser',
       email: 'testemailgmail.com',
       birthDate,
       city,
@@ -97,7 +97,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should create an user', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser',
+      username: 'testuser',
       email: 'testemail@gmail.com',
       password: 'PassW123456',
       birthDate,
@@ -105,9 +105,9 @@ describe('POST /api/users/register', () => {
       country
     }))
     expect(res.statusCode).toBe(201)
-    const user = await User.findOne({ username: 'testUser' })
+    const user = await User.findOne({ username: 'testuser' })
     expect(user).toBeTruthy()
-    expect(res.body.data.username).toBe('testUser')
+    expect(res.body.data.username).toBe('testuser')
     expect(res.body.data.email).toBe('testemail@gmail.com')
   })
 })
@@ -115,7 +115,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should not create an user with the same username', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser',
+      username: 'testuser',
       email: 'testemail2@gmail.com',
       password: 'PassW123456',
       birthDate,
@@ -129,7 +129,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should not create an user with the same email', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testUser2',
+      username: 'testuser2',
       email: 'testemail@gmail.com',
       password: 'PassW123456',
       birthDate,

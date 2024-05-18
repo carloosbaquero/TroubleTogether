@@ -140,6 +140,9 @@ const TravelScreen = () => {
         isOpen={showDates} style={{
           overlay: {
             zIndex: 3
+          },
+          content: {
+            height: '480px'
           }
         }}
       >
@@ -150,6 +153,7 @@ const TravelScreen = () => {
           setEndDate={setEndDate}
           handleConfirmDate={handleConfirmDate}
           handleCancelDate={handleCancelDate}
+          isSmallScreen={isSmallScreen}
         />
       </Modal>
       <Modal
@@ -161,7 +165,7 @@ const TravelScreen = () => {
       >
         <div className='modal-container'>
           <h3>Filter by Country:</h3>
-          <div className='modal-countries'>
+          <div className={isSmallScreen ? 'travels-container' : 'modal-countries'}>
 
             {countries.map(country => (
               <div key={country}>
@@ -192,7 +196,7 @@ const TravelScreen = () => {
           <button className='green-button' onClick={handleSearch}>Search</button>
         </div>
 
-        <div>
+        <div className='filters-block'>
           <h3>Filter By:</h3>
           <button className='green-button' onClick={handleModalCountries}>Countries</button>
           <button className='green-button' onClick={handleModalDates}>Dates</button>
@@ -213,13 +217,13 @@ const TravelScreen = () => {
                   <>
                     <br />
                     <br />
-                    <h4>There are no travels with these filters. You can plann it yourself!</h4>
+                    <h4>There are no travels with these filters. You can plan it yourself!</h4>
                   </>
                   )
                 : (
                   <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
                     {travels.length > 0 && travels.map((travel, index) => {
-                      return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} />
+                      return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} profPic={travel.organizerId.profPic ? travel.organizerId.profPic : '/default-profile-pic.jpg'} />
                     })}
 
                   </div>)}

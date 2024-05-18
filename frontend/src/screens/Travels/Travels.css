@@ -1,13 +1,23 @@
 .travels {
-    margin-top: 190px;
+  margin-top: 210px;
     display: grid;
     justify-content: center;
+    padding-left: 20px;
+}
+
+.travels h1 {
+  word-wrap: break-word; /* Permite que las palabras largas se rompan y se ajusten dentro del contenedor */
+    white-space: normal; /* Asegura que el texto se ajuste al ancho del contenedor */
 }
 
 .travel-cards-container {
     display: grid;
-    grid-template-columns: repeat(2, minmax(300px, 500px));
+    grid-template-columns: repeat(2, minmax(200px, 500px));
     gap: 20px;
+  }
+
+  .filter-block {
+    margin-left: 40px;
   }
 
   .search-container {
@@ -31,7 +41,6 @@
     border: none;
     padding: 8px 12px;
     border-radius: 4px;
-    margin-left: 8px;
     cursor: pointer;
   }
   
@@ -58,4 +67,16 @@
 
   .modal-buttons {
     margin-left: auto;
+  }
+
+  @media (max-width: 900px) {
+    .travels {
+      margin-top: 100px;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .search-input {
+      max-width: 230px;
+    }
   }

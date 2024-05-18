@@ -2,9 +2,13 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import Session from '../models/session.js'
-import { registerValidation, loginValidation, refreshTokenValidation } from './validations/userValidation.js'
+import { registerValidation, loginValidation, refreshTokenValidation, updateProfileValidation } from './validations/userValidation.js'
 import { generateTokens, verifyRefreshToken } from '../utils/utils.js'
 import PlannedTravel from '../models/plannedTravel.js'
+import path from 'path'
+import fs from 'fs'
+import { fileURLToPath } from 'url'
+import Post from '../models/post.js'
 
 export const register = async (req, res) => {
   try {
@@ -153,88 +157,123 @@ export const whoAmI = async (req, res) => {
     username = await User.findById(req.user._id)
   }
 
-  res.status(200).json({ error: null, data: { userId, username: username.username } })
+  res.status(200).json({ error: null, data: { userId, username: username.username, profPic: username.profPic } })
 }
 
 export const myProffile = async (req, res) => {
   const userId = req.user._id
   try {
     const user = await User.findById(userId)
-    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').sort({ startDate: 'asc' })
-    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').sort({ startDate: 'asc' })
+    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const posts = await Post.find({ user: userId }).populate('likes').populate('user')
+      .populate({
+        path: 'comments',
+        populate: { path: 'user' }
+      })
+      .sort({ createdAt: 'desc' })
 
-    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending } })
+    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending, posts } })
   } catch (err) {
     console.log(err)
     res.status(500).json({ error: 'Internal Server Error' })
   }
 }
 
-// export const completeProfile = async (req, res) => {
-//   try {
-//     completeProfileValidation(req, res).then(async (res) => {
-//       if (res.statusCode !== 200) {
-//         return res
-//       } else {
-//         try {
-//           const user = await User.findById(req.user._id)
-//           user.name = req.body.name
-//           user.lastName = req.body.lastName
-//           user.description = req.body.description
-//           user.birthDate = req.body.birthDate
-//           user.country = req.body.country
-//           user.city = req.body.city
-//           user.languages = req.body.languages
-//           user.visitedCities = req.body.visitedCountries
+export const getProffile = async (req, res) => {
+  try {
+    const userId = req.params.userId
+    const user = await User.findById(userId)
+    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const posts = await Post.find({ user: userId }).populate('likes').populate('user')
+      .populate({
+        path: 'comments',
+        populate: { path: 'user' }
+      })
+      .sort({ createdAt: 'desc' })
 
-//           const savedUser = await user.save()
+    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending, posts } })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
 
-//           res.status(201).json({
-//             error: null,
-//             data: savedUser
-//           })
-//         } catch (error) {
-//           console.log(error)
-//           res.status(401).json({ error })
-//         }
-//       }
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: 'Internal Server Error' })
-//   }
-// }
+export const updateProfile = async (req, res) => {
+  try {
+    updateProfileValidation(req, res).then(async (res) => {
+      if (res.statusCode !== 200) {
+        return res
+      } else {
+        try {
+          const user = await User.findById(req.user._id)
+          user.name = req.body.name ? req.body.name : user.name
+          user.lastName = req.body.lastName ? req.body.lastName : user.lastName
+          user.description = req.body.description ? req.body.description : user.description
+          user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
+          user.country = req.body.country ? req.body.country : user.country
+          user.city = req.body.city ? req.body.city : user.city
+          if (req.file) {
+            const { filename } = req.file
 
-// export const updateProfile = async (req, res) => {
-//   try {
-//     updateProfileValidation(req, res).then(async (res) => {
-//       if (res.statusCode !== 200) {
-//         return res
-//       } else {
-//         try {
-//           const user = await User.findById(req.user._id)
-//           user.name = req.body.name ? req.body.name : user.name
-//           user.lastName = req.body.lastName ? req.body.lastName : user.lastName
-//           user.description = req.body.description ? req.body.description : user.description
-//           user.birthDate = req.body.birthDate ? req.body.birthDate : user.birthDate
-//           user.nationality = req.body.nationality ? req.body.nationality : user.nationality
-//           user.languages = req.body.languages ? req.body.languages : user.languages
-//           user.visitedCountries = req.body.visitedCountries ? req.body.visitedCountries : user.visitedCountries
+            if (user.profPic) {
+              const __filename = fileURLToPath(import.meta.url)
+              const __dirname = path.dirname(__filename)
+              const profPic = user.profPic.split('/').at(-1)
+              const oldFilePath = path.join(__dirname, '..', 'public', 'profPic', profPic)
+              console.log(oldFilePath)
+              fs.unlink(oldFilePath, (err) => {
+                if (err) {
+                  console.error('Error while deleting old image:', err)
+                } else {
+                  console.log('Old image successfully deleted')
+                }
+              })
+            }
+            user.setProfPic(filename)
+          }
 
-//           const savedUser = await user.save()
+          const savedUser = await user.save()
 
-//           res.status(201).json({
-//             error: null,
-//             data: savedUser
-//           })
-//         } catch (error) {
-//           console.log(error)
-//           res.status(401).json({ error })
-//         }
-//       }
-//     })
-//   } catch (error) {
-//     console.log(error)
-//     res.status(500).json({ error: 'Internal Server Error' })
-//   }
-// }
+          res.status(200).json({
+            error: null,
+            data: savedUser
+          })
+        } catch (error) {
+          console.log(error)
+          res.status(401).json({ error })
+        }
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
+export const searchUsersAndPosts = async (req, res) => {
+  try {
+    const search = req.query.search
+
+    const removeAccents = (str) => {
+      return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    }
+
+    const searchNoAccents = removeAccents(search)
+
+    const users = await User.find({ username: { $regex: searchNoAccents, $options: 'i' } })
+    const userIds = users.map(user => user._id)
+    const posts = await Post.find({ user: { $in: userIds } }).populate('user').populate('likes')
+      .populate({
+        path: 'comments',
+        populate: { path: 'user' }
+      })
+      .sort({ createdAt: 'desc' })
+
+    return res.status(200).json({ error: null, data: { users, posts } })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}

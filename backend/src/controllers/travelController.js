@@ -132,6 +132,7 @@ export const getTravels = async (req, res) => {
       endDate: { $lte: end },
       $expr: { $lt: [{ $size: '$atendees' }, '$maxAtendees'] }
     }).populate('destination')
+      .populate('organizerId')
       .sort(sortBy)
       .skip(page * limit)
       .limit(limit)
@@ -186,6 +187,21 @@ export const getTravelDashboard = async (req, res) => {
       .populate({
         path: 'requests',
         populate: { path: 'user' }
+      })
+      .populate({
+        path: 'posts',
+        populate: { path: 'user' }
+      })
+      .populate({
+        path: 'posts',
+        populate: { path: 'likes' }
+      })
+      .populate({
+        path: 'posts',
+        populate: {
+          path: 'comments',
+          populate: { path: 'user' }
+        }
       })
 
     res.status(200).json({ error: null, data: travel })

@@ -2,7 +2,7 @@
     display: grid;
     align-items: center; /* Alinea verticalmente al centro */
     max-width: 500px;
-    min-width: 300px;
+    min-width: 200px;
     border: 2px solid black;
     margin: 10px;
     padding: 10px;
@@ -41,6 +41,7 @@
 
   .travel-card h5 {
     white-space: nowrap;
+    overflow: hidden;
     text-overflow: ellipsis;
     margin: 3px
   }

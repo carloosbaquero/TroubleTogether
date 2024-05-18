@@ -1,18 +1,9 @@
 .create-travel {
-    display: grid;
+    display: flex;
     justify-content: center;
     margin-top: 190px;
     margin-bottom: 20px;
 }
-
-
-/* .create-travel {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-  } */
   
   .destination {
     border: 1px solid black;
@@ -73,4 +64,18 @@
     grid-template-columns: auto auto auto auto;
     grid-column-gap: 20px;
   }
+
+@media (max-width: 900px) {
+    .create-travel {
+      margin-top: 90px;
+  }
+}
   
+
+  @media (max-width: 700px) {
+    .create-travel div {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+  }

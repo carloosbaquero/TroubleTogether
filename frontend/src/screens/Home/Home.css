@@ -7,9 +7,39 @@
 .home-info {
     display: grid;
     grid-template-columns: auto auto;
+    margin-bottom: 50px;
 }
 
 .home-text {
     margin-top: 20px;
     margin-left: 30px;
+}
+
+@media (max-width: 900px) {
+    .home {
+        margin-top: 90px;
+    }
+}
+
+@media (max-width: 1000px) {
+    .home {
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+    .home-info {
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .home {
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    .home-text {
+        margin-top: 0px;
+        margin-left: 0px;
+    }
+
 }

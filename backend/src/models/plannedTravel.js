@@ -3,6 +3,7 @@ import Destination from './destination.js'
 import Suggestion from './suggestion.js'
 import DailyItinerary from './dailyItinerary.js'
 import Request from './request.js'
+import Post from './post.js'
 
 const Schema = mongoose.Schema
 
@@ -76,6 +77,12 @@ const PlannedTravelSchema = new Schema({
       type: Schema.Types.ObjectId,
       ref: 'Request'
     }
+  ],
+  posts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'Post'
+    }
   ]
 },
 { timestamps: true }
@@ -94,6 +101,18 @@ PlannedTravelSchema.pre('save', async function (next) {
     })
     this.itinerary = await Promise.all(itineraryPromises)
     this.itinerary.sort((a, b) => a.date - b.date)
+
+    const suggestionsPromises = this.suggestions.map(async (suggestionId) => {
+      return await Suggestion.findById(suggestionId)
+    })
+    this.suggestions = await Promise.all(suggestionsPromises)
+    this.suggestions.sort((a, b) => b.updatedAt - a.updatedAt)
+
+    const postsPromises = this.posts.map(async (postId) => {
+      return await Post.findById(postId)
+    })
+    this.posts = await Promise.all(postsPromises)
+    this.posts.sort((a, b) => b.createdAt - a.createdAt)
 
     next()
   } catch (error) {

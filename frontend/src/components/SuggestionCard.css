@@ -1,11 +1,9 @@
 .suggestion-card {
-    display: grid;
-    align-items: center;
-    max-width: 340px;
+    width: 270px;
     border: 2px solid black;
     margin: 10px;
     padding: 10px;
-    height: 200px;
+    max-height: 300px;
 }
 
 .suggestion-card textarea {

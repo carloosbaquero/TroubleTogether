@@ -1,0 +1,35 @@
+.community {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: auto auto auto;
+    gap: auto;
+    width: 100%;
+}
+
+.fixed-button {
+    position: fixed;
+    top: 200px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 30px;
+    z-index: 2;
+}
+
+@media (max-width: 1050px) {
+    .community{
+        grid-template-columns: auto auto;
+    }
+}
+
+@media (max-width: 710px) {
+    .community{
+        grid-template-columns: auto;
+    }
+}
+
+@media (max-width: 900px) {
+.fixed-button {
+    top: 90px;
+}
+}

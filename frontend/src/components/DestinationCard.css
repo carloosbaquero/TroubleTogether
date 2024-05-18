@@ -1,11 +1,10 @@
 .dest-card {
-    display: grid;
-    align-items: center;
-    max-width: 320px;
+    width: 320px;
     border: 2px solid black;
     margin: 10px;
     padding: 10px;
-    max-height: 200px;
+    max-height: 550px;
+    box-sizing: border-box;
 }
 
 .circle {
@@ -27,6 +26,7 @@
   .dest-card-top {
     display: grid;
     grid-template-columns: auto auto;
+    width: auto;
   }
 
   .dest-card-icons {
@@ -48,7 +48,11 @@
 
   .edit-dest-card {
     display: flex;
+    margin-bottom: 10px;
+    width: auto;
+    box-sizing: border-box;
   }
+
   
   .edit-dest-card h4 {
     margin-right: 10px;
@@ -64,4 +68,19 @@
 
   .edit-dest-card select {
     width: 100%;
+  }
+
+  .edit-dest-card input {
+    width: 100%;
+    border: 1px solid #ccc;
+  }
+
+  .edit-dest-card textarea {
+    border: 1px solid #ccc;
+  }
+
+  @media (max-width: 500px) {
+    .dest-card {
+      width: 260px;
+    }
   }

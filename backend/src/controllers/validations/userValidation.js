@@ -2,11 +2,10 @@ import Joi from '@hapi/joi'
 import bcrypt from 'bcrypt'
 import User from '../../models/User.js'
 import countries from '../../utils/countries.js'
-import { nativeNames } from '../../utils/languages.js'
 
 export const registerValidation = async (req, res) => {
   const schemaRegister = Joi.object({
-    username: Joi.string().min(6).max(20).required().label('Username'),
+    username: Joi.string().pattern(/^[a-z0-9_]+$/).min(6).max(20).required().label('Username').messages({ 'string.pattern.base': 'username can only contain lowercase letters, digits and underscores.' }),
     email: Joi.string().min(6).max(100).required().email().label('Email'),
     password: Joi.string().min(8).max(1024).required().label('Password'),
     birthDate: Joi.date().max('now').required().label('Birth Date'),
@@ -78,46 +77,23 @@ export const refreshTokenValidation = async (req, res) => {
   if (!error) return res.status(200)
 }
 
-// export const updateProfileValidation = async (req, res) => {
-//   const schemaUpdateProfile = Joi.object({
-//     name: Joi.string().min(2).max(50).label('Name'),
-//     lastName: Joi.string().min(3).max(50).label('Last Name'),
-//     description: Joi.string().max(550).label('Description'),
-//     birthDate: Joi.date().max('now').iso().label('Birth Date'),
-//     nationality: Joi.string().valid(...countries).label('Nationality'),
-//     languages: Joi.array().items(Joi.string().valid(...nativeNames)).label('Languages'),
-//     visitedCountries: Joi.array().items(Joi.string().valid(...countries)).label('Visited Countries')
-//   })
+export const updateProfileValidation = async (req, res) => {
+  const schemaUpdateProfile = Joi.object({
+    name: Joi.string().min(2).max(50).label('Name'),
+    lastName: Joi.string().min(3).max(50).label('Last Name'),
+    description: Joi.string().max(550).label('Description'),
+    birthDate: Joi.date().max('now').iso().label('Birth Date'),
+    country: Joi.string().valid(...countries).label('Country'),
+    city: Joi.string().max(30).label('City')
+  })
 
-//   const { error } = schemaUpdateProfile.validate(req.body)
+  const { error } = schemaUpdateProfile.validate(req.body)
 
-//   if (error) {
-//     return res.status(400).json(
-//       { error: error.details[0].message }
-//     )
-//   }
+  if (error) {
+    return res.status(400).json(
+      { error: error.details[0].message }
+    )
+  }
 
-//   if (!error) return res.status(200)
-// }
-
-// export const completeProfileValidation = async (req, res) => {
-//   const schemaUpdateProfile = Joi.object({
-//     name: Joi.string().min(2).max(50).required().label('Name'),
-//     lastName: Joi.string().min(3).max(50).required().label('Last Name'),
-//     description: Joi.string().max(550).required().label('Description'),
-//     birthDate: Joi.date().max('now').iso().required().label('Birth Date'),
-//     nationality: Joi.string().valid(...countries).required().label('Nationality'),
-//     languages: Joi.array().items(Joi.string().valid(...nativeNames)).required().label('Languages'),
-//     visitedCountries: Joi.array().items(Joi.string().valid(...countries)).required().label('Visited Countries')
-//   })
-
-//   const { error } = schemaUpdateProfile.validate(req.body)
-
-//   if (error) {
-//     return res.status(400).json(
-//       { error: error.details[0].message }
-//     )
-//   }
-
-//   if (!error) return res.status(200)
-// }
+  if (!error) return res.status(200)
+}

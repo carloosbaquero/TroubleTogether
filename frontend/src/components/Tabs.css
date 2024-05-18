@@ -1,24 +1,33 @@
 .tabs {
-    display: flex;
-    border-bottom: 1px solid #ccc;
-  }
-  
-  .tab {
-    padding: 10px 20px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-  }
-  
-  .tab:hover {
-    border-bottom: 2px solid #007bff; /* Color de borde al pasar el ratón */
-  }
-  
-  .tab.active {
-    border-bottom: 2px solid #007bff; /* Color de borde de la pestaña activa */
-  }
-  
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  overflow-x: auto; /* Habilita el desplazamiento horizontal */
+  white-space: nowrap; /* Evita que las pestañas se envuelvan a la siguiente línea */
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  flex-shrink: 0; /* Evita que las pestañas se reduzcan de tamaño */
+}
+
+.tab:hover {
+  border-bottom: 2px solid #007bff; /* Color de borde al pasar el ratón */
+}
+
+.tab.active {
+  border-bottom: 2px solid #007bff; /* Color de borde de la pestaña activa */
+}
+
+.tab-content {
+  padding: 20px;
+  min-height: 350px;
+}
+
+@media (max-width: 500px) {
   .tab-content {
     padding: 20px;
-    min-height: 350px;
+    min-height: 500px;
   }
-  
+}
