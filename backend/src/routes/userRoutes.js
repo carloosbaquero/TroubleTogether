@@ -1,5 +1,5 @@
 import express from 'express'
-import { register, login, getNewAccessToken, logout, whoAmI, myProffile, updateProfile, searchUsersAndPosts } from '../controllers/userController.js'
+import { register, login, getNewAccessToken, logout, whoAmI, myProffile, updateProfile, searchUsersAndPosts, getProffile } from '../controllers/userController.js'
 import { isLogged, roleCheck } from '../middlewares/authMiddlewares.js'
 import { uploadProfPic } from '../utils/upload.js'
 
@@ -27,11 +27,8 @@ userRoutes.route('/my-prof')
 userRoutes.route('/community')
   .get(searchUsersAndPosts)
 
-// userRoutes.route('/update')
-//   .put(isLogged, updateProfile)
-
-// userRoutes.route('/complete')
-//   .put(isLogged, completeProfile)
+userRoutes.route('/prof/:userId')
+  .get(getProffile)
 
 // Esto es para testear los middleware
 userRoutes.get('/details', isLogged, roleCheck(['user']), (req, res) => {

@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom'
 import computeAge from '../utils/computeAge'
 import './UserCard.css'
 
 const UserCard = ({ user }) => {
+  const navigate = useNavigate()
   return (
-    <div className='user'>
+    <div className='user' onClick={() => navigate(`/globetrotters/proffile/${user._id}`)}>
       <div className='user-profPic'>
         <img src={user?.profPic ? user.profPic : '/default-profile-pic.jpg'} alt='Profile' className='user-profPic' />
       </div>

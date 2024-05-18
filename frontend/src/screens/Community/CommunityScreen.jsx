@@ -6,6 +6,7 @@ import Post from '../../components/Post'
 import { getAccessToken, getRefreshToken } from '../../utils/authHelpers'
 import './Community.css'
 import UserCard from '../../components/UserCard'
+import { useNavigate } from 'react-router-dom'
 
 const CommunityScreen = () => {
   const [posts, setPosts] = useState([])
@@ -18,6 +19,8 @@ const CommunityScreen = () => {
   const [username, setUsername] = useState('')
   const [profPic, setProfPic] = useState('/default-profile-pic.jpg')
   const [showButton, setShowButton] = useState(false)
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     const getAllPosts = async () => {
@@ -128,7 +131,7 @@ const CommunityScreen = () => {
                     })}
                     {users.length > 0 && users.map((u, index) => {
                       return (
-                        <UserCard key={index} user={u} />
+                        <UserCard key={index} user={u} navigate={navigate} />
                       )
                     })}
                   </div>)}

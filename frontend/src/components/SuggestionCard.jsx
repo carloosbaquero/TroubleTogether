@@ -7,6 +7,7 @@ import { MdDelete } from 'react-icons/md'
 import { useEffect, useState } from 'react'
 import api from '../utils/api'
 import Modal from 'react-modal'
+import { useNavigate } from 'react-router-dom'
 
 const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, descriptionProp, dash, participant, approvationsProp, planned }) => {
   const [editMode, setEditMode] = useState(false)
@@ -19,6 +20,9 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
   const [input, setInput] = useState({
     description: descriptionProp
   })
+
+  const navigate = useNavigate()
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setInput(prevInput => ({
@@ -129,10 +133,10 @@ const SuggestionCard = ({ handleReload, travelId, suggestionId, suggestionUser, 
           </div>}
         <div className='dest-card-top'>
           <div className='atendee'>
-            <div className='profile-picture-atendee'>
+            <div className='profile-picture-atendee' onClick={() => navigate(`/globetrotters/proffile/${suggestionUser?._id}`)}>
               <img src={suggestionUser?.profPic ? suggestionUser.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
             </div>
-            <p>{suggestionUser?.username}</p>
+            <p className='username-atendee' onClick={() => navigate(`/globetrotters/proffile/${suggestionUser?._id}`)}>{suggestionUser?.username}</p>
           </div>
           {dash && participant?.userId === suggestionUser?._id && !editMode && !planned &&
             <div className='dest-card-icons'>

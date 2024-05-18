@@ -8,6 +8,7 @@ import TravelInfoScreen from './screens/TravelInfo/TravelInfoScreen'
 import TravelDashboard from './screens/TravelDashboard/TravelDashboardScreen'
 import MyProffileScreen from './screens/Proffile/MyProffileScreen'
 import CommunityScreen from './screens/Community/CommunityScreen'
+import ProffileScreen from './screens/Proffile/ProffileScreen'
 
 initAxiosAuth()
 
@@ -22,6 +23,7 @@ function App () {
       <Route path='/globetrotters/travels/:travelId/info' element={<TravelInfoScreen />} />
       <Route path='/globetrotters/travels/:travelId/dashboard' element={<TravelDashboard />} />
       <Route path='/globetrotters/my-proffile' element={<MyProffileScreen />} />
+      <Route path='/globetrotters/proffile/:userId' element={<ProffileScreen />} />
       <Route path='*' element={<Navigate to='/globetrotters' />} />
     </Routes>
   )

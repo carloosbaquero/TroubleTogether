@@ -11,7 +11,7 @@ const RequestsDashboard = ({ travelInfo }) => {
         {filteredRequests.length > 0
           ? (
               filteredRequests.map((value, index) => (
-                <RequestCard key={index} requestId={value._id} username={value.user.username} travelId={travelInfo._id} />
+                <RequestCard key={index} requestId={value._id} userId={value.user._id} username={value.user.username} profPic={value.user.profPic} travelId={travelInfo._id} />
               ))
             )
           : (

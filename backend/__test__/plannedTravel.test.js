@@ -23,7 +23,7 @@ beforeAll(async () => {
   const country = 'Spain'
 
   const register = await request(app).post('/api/users/register').send({
-    username: 'testUser',
+    username: 'testuser',
     email: 'testemail@gmail.com',
     password: 'PassW123456',
     birthDate,
@@ -38,7 +38,7 @@ beforeAll(async () => {
   accessToken = res.body.data.accessToken
 
   await request(app).post('/api/users/register').send({
-    username: 'testUser2',
+    username: 'testuser2',
     email: 'testemail2@gmail.com',
     password: 'PassW123456',
     birthDate,
@@ -418,7 +418,7 @@ describe('GET /api/travels/dashboard/:id', () => {
     expect(res.body.data.maxAtendees).toBe(5)
     expect(res.body.data.startDate).toBe('2025-01-01T12:00:00.000Z')
     expect(res.body.data.endDate).toBe('2027-03-01T12:00:00.000Z')
-    expect(res.body.data.organizerId.username).toBe('testUser')
+    expect(res.body.data.organizerId.username).toBe('testuser')
     expect(res.body.data.atendees.length).toBe(0)
     expect(res.body.data.destination.length).toBe(2)
     expect(res.body.data.destination[0].city).toBe('Sevilla')
@@ -444,7 +444,7 @@ describe('GET /api/travels/info/:id', () => {
     expect(res.body.data.maxAtendees).toBe(5)
     expect(res.body.data.startDate).toBe('2025-01-01T12:00:00.000Z')
     expect(res.body.data.endDate).toBe('2027-03-01T12:00:00.000Z')
-    expect(res.body.data.organizerId.username).toBe('testUser')
+    expect(res.body.data.organizerId.username).toBe('testuser')
     expect(res.body.data.atendees.length).toBe(0)
     expect(res.body.data.destination.length).toBe(2)
     expect(res.body.data.destination[0].city).toBe('Sevilla')

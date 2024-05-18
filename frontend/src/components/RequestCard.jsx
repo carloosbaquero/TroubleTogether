@@ -2,10 +2,13 @@ import { useState } from 'react'
 import api from '../utils/api'
 import './RequestCard.css'
 import PropTypes from 'prop-types'
+import { useNavigate } from 'react-router-dom'
 
-const RequestCard = ({ requestId, username, travelId }) => {
+const RequestCard = ({ requestId, userId, username, profPic, travelId }) => {
   const [approved, setApproved] = useState(false)
   const [rejected, setRejected] = useState(false)
+
+  const navigate = useNavigate()
 
   const handleApprove = async () => {
     try {
@@ -32,10 +35,10 @@ const RequestCard = ({ requestId, username, travelId }) => {
   return (
     <div className='request-card'>
       <div className='atendee'>
-        <div className='profile-picture-atendee'>
-          <img src='/login.png' alt='Profile' className='profile-picture__image' />
+        <div onClick={() => navigate(`/globetrotters/proffile/${userId}`)} className='profile-picture-atendee'>
+          <img src={profPic || 'default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
         </div>
-        <p>{username}</p>
+        <p className='username-atendee' onClick={() => navigate(`/globetrotters/proffile/${userId}`)}>{username}</p>
       </div>
       <div className='request-card-buttons'>
         {!rejected

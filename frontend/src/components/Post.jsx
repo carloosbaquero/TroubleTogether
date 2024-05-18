@@ -24,8 +24,6 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
 
   const navigate = useNavigate()
 
-  console.log(user)
-
   const handleChange = (e) => {
     const { name, value } = e.target
     setInput(prevInput => ({
@@ -211,10 +209,10 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
         {!add &&
           <div className='post-card-top'>
             <div className='atendee'>
-              <div className='profile-picture-atendee'>
+              <div className='profile-picture-atendee' onClick={() => navigate(`/globetrotters/proffile/${postUser?._id}`)}>
                 <img src={postUser?.profPic ? postUser.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
               </div>
-              <p>{postUser?.username}</p>
+              <p className='username-atendee' onClick={() => navigate(`/globetrotters/proffile/${postUser?._id}`)}>{postUser?.username}</p>
             </div>
             {user?.userId?.toString() === postUser?._id?.toString() &&
               <div className='post-top-icons'>

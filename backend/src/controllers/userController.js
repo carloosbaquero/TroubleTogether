@@ -180,6 +180,26 @@ export const myProffile = async (req, res) => {
   }
 }
 
+export const getProffile = async (req, res) => {
+  try {
+    const userId = req.params.userId
+    const user = await User.findById(userId)
+    const travelsOrganizing = await PlannedTravel.find({ organizerId: userId }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const travelsAtending = await PlannedTravel.find({ atendees: { $in: [userId] } }).populate('destination').populate('organizerId').sort({ startDate: 'asc' })
+    const posts = await Post.find({ user: userId }).populate('likes').populate('user')
+      .populate({
+        path: 'comments',
+        populate: { path: 'user' }
+      })
+      .sort({ createdAt: 'desc' })
+
+    return res.status(200).json({ error: null, data: { user, travelsOrganizing, travelsAtending, posts } })
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ error: 'Internal Server Error' })
+  }
+}
+
 export const updateProfile = async (req, res) => {
   try {
     updateProfileValidation(req, res).then(async (res) => {
