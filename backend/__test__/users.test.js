@@ -97,7 +97,7 @@ describe('POST /api/users/register', () => {
 describe('POST /api/users/register', () => {
   it('should create an user', async () => {
     const res = (await request(app).post('/api/users/register').send({
-      username: 'testuser',
+      username: 'testuser ',
       email: 'testemail@gmail.com',
       password: 'PassW123456',
       birthDate,

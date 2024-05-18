@@ -23,7 +23,7 @@ const Header = () => {
       }
       deleteAccessToken()
       deleteRefreshToken()
-      navigate('/globetrotters/sign')
+      navigate('/globetrotters/sign', { replace: true })
     } catch (err) {
       console.log(err)
     }

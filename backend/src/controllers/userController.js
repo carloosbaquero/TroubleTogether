@@ -17,14 +17,14 @@ export const register = async (req, res) => {
         return res
       } else {
         const salt = await bcrypt.genSalt(10)
-        const password = await bcrypt.hash(req.body.password, salt)
+        const password = await bcrypt.hash(req.body.password.trim(), salt)
 
         const user = new User({
-          username: req.body.username,
-          email: req.body.email,
+          username: req.body.username.trim(),
+          email: req.body.email.trim(),
           password,
           birthDate: req.body.birthDate,
-          city: req.body.city,
+          city: req.body.city.trim(),
           country: req.body.country
         })
         try {
@@ -51,7 +51,7 @@ export const login = async (req, res) => {
       if (res.statusCode !== 200) {
         return res
       } else {
-        const user = await User.findOne({ email: req.body.email })
+        const user = await User.findOne({ email: req.body.email.trim() })
 
         const { accessToken, refreshToken } = await generateTokens(user)
         res.status(200).json({
