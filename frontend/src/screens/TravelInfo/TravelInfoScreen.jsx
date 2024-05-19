@@ -10,6 +10,10 @@ import { getAccessToken, getRefreshToken } from '../../utils/authHelpers'
 import Modal from 'react-modal'
 import Loader from '../../components/Loader'
 import { MdKeyboardDoubleArrowLeft, MdKeyboardDoubleArrowRight } from 'react-icons/md'
+import DestinationsDashboard from '../../components/DestinationsDashboard'
+import ItineraryDashboard from '../../components/ItineraryDashboard'
+import PostDashboard from '../../components/PostDashboard'
+import Tabs from '../../components/Tabs'
 
 const TravelInfoScreen = () => {
   const [travelInfo, setTravelInfo] = useState({})
@@ -23,8 +27,15 @@ const TravelInfoScreen = () => {
   const [shouldNavigate, setShouldNavigate] = useState(false)
   const [showAtendees, setShowAtendees] = useState(false)
   const [isSmallScreen, setIsSmallScreen] = useState(false)
+  const [username, setUsername] = useState('')
+  const [profPic, setProfPic] = useState('default-profile-pic.jpg')
+  const [shouldReload, setShouldReload] = useState(false)
 
   const navigate = useNavigate()
+
+  const handleReload = () => {
+    setShouldReload(prevState => !prevState)
+  }
 
   const handleRequest = async () => {
     try {
@@ -66,6 +77,8 @@ const TravelInfoScreen = () => {
             if (data.data.userId === resTravelInfo.organizerId._id || resTravelInfo.atendees.some(atendee => atendee._id === prevUserId)) {
               setShouldNavigate(true)
             } else {
+              setUsername(data.data.username)
+              setProfPic(data.data.profPic)
               setLoading(false)
             }
             return data.data.userId
@@ -87,14 +100,19 @@ const TravelInfoScreen = () => {
     return () => {
       mediaQuery.removeEventListener('change', handleMediaQueryChanges)
     }
-  }, [travelId, requested, userId])
+  }, [travelId, requested, userId, shouldReload])
 
   useEffect(() => {
     if (shouldNavigate) {
       navigate(`/globetrotters/travels/${travelId}/dashboard`, { replace: true })
-      setLoading(false)
     }
   }, [shouldNavigate, navigate, travelId])
+
+  const tabs = [
+    { title: 'Destinations', content: <DestinationsDashboard organizer={false} travelInfo={travelInfo} planned /> },
+    { title: 'Itinerary', content: <ItineraryDashboard organizer={false} travelInfo={travelInfo} planned /> },
+    { title: 'Posts', content: <PostDashboard handleReload={handleReload} posts={travelInfo.posts} travelId={travelInfo._id} username={username} profPic={profPic} userId={userId} /> }
+  ]
 
   if (loading) {
     return (<Loader />)
@@ -154,7 +172,7 @@ const TravelInfoScreen = () => {
 
         </div>
       </Modal>
-      <Header />
+      {!loading && <Header />}
       <div className='contents'>
         <h1>{travelInfo.name}</h1>
         <hr />
@@ -176,14 +194,7 @@ const TravelInfoScreen = () => {
             </div>
             <br />
             <hr />
-            <h2>Destinations</h2>
-            <div className='destinations'>
-              {travelInfo.destination.map((value, index) => {
-                return (
-                  <DestinationCard travelId={travelId} key={index} index={index + 1} cityProp={value.city} countryProp={value.country} hotelProp={value.hotel} startDateProp={value.startDate} endDateProp={value.endDate} />
-                )
-              })}
-            </div>
+            <Tabs tabs={tabs} />
           </div>
           {!showAtendees && <button className='vertical-green-button' onClick={() => setShowAtendees(true)}><MdKeyboardDoubleArrowLeft /> SHOW ATENDEES <MdKeyboardDoubleArrowLeft /></button>}
           {showAtendees &&

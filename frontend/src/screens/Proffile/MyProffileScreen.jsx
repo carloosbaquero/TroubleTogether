@@ -121,7 +121,7 @@ const MyProffileScreen = () => {
   <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
     {posts.length
       ? posts.map((value, index) => {
-        return <Post key={index} postId={value._id} travelId={value.travel} user={{ userId: user._id, username: user.username, profPic: user.profPic }} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} />
+        return <Post key={index} postId={value._id} travelId={value.travel} user={{ userId: user._id, username: user.username, profPic: user.profPic }} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} handleReload={handleReload} />
       })
 
       : (

@@ -156,7 +156,6 @@ const TravelDashboard = () => {
   useEffect(() => {
     if (shouldNavigate) {
       navigate(`/globetrotters/travels/${travelId}/info`, { replace: true })
-      setLoading(false)
     }
   }, [shouldNavigate, navigate, travelId])
 
@@ -181,7 +180,7 @@ const TravelDashboard = () => {
           },
           content: {
             width: isSmallScreen ? '320px' : '420px',
-            height: '250px',
+            height: '300px',
             margin: 'auto'
           }
         }}
@@ -192,7 +191,7 @@ const TravelDashboard = () => {
               <>
                 <h3>Mark travel as Planned</h3>
                 <br />
-                <p>When you have marked your travel as Planned, you will not be able to edit your travel and all the atendees will have the option of uploading posts about this travel</p>
+                <p>When you have marked your travel as Planned, you will not be able to edit your travel and all the atendees will have the option of uploading posts about this travel. Also, your travel will no longer be available in the Search for a Travel feed.</p>
                 <br />
                 <div className='modal-buttons'>
                   <button className='red-button' onClick={() => setShowModalState(false)}>Cancel</button>
@@ -204,7 +203,7 @@ const TravelDashboard = () => {
               <>
                 <h3>Mark travel as Planning</h3>
                 <br />
-                <p>When you have marked your travel as Planning, you will be able to edit your travel, but you will not be able to upload or view the posts that were made</p>
+                <p>When you have marked your travel as Planning, you will be able to edit your travel, but you will not be able to upload or view the posts that were made. Also, your travel will be available in the Search for a Travel feed again.</p>
                 <br />
                 <div className='modal-buttons'>
                   <button className='red-button' onClick={() => setShowModalState(false)}>Cancel</button>
@@ -297,7 +296,7 @@ const TravelDashboard = () => {
           )}
         </Formik>
       </Modal>
-      <Header />
+      {!loading && <Header />}
       <div className='contents'>
 
         <h1>{travelInfo.name} {travelInfo.organizerId._id === userId && travelInfo.state === 'Planning' ? <GrEdit onClick={() => setEditMode(true)} className='edit-icon' /> : ''}</h1>

@@ -19,8 +19,13 @@ const CommunityScreen = () => {
   const [username, setUsername] = useState('')
   const [profPic, setProfPic] = useState('/default-profile-pic.jpg')
   const [showButton, setShowButton] = useState(false)
+  const [shouldReload, setShouldReload] = useState(false)
 
   const navigate = useNavigate()
+
+  const handleReload = () => {
+    setShouldReload(prevState => !prevState)
+  }
 
   useEffect(() => {
     const getAllPosts = async () => {
@@ -76,7 +81,7 @@ const CommunityScreen = () => {
       mediaQuery.removeEventListener('change', handleMediaQueryChanges)
       window.removeEventListener('scroll', handleScroll)
     }
-  }, [search])
+  }, [search, shouldReload])
 
   const handleMediaQueryChanges = (mediaQuery) => {
     if (mediaQuery.matches) {
@@ -99,6 +104,7 @@ const CommunityScreen = () => {
       {showButton && <button className='fixed-button' onClick={scrollToTop}>↑</button>}
       <div className='travels'>
         <h1>Have you planned a travel? Share your experience to join our community</h1>
+        <p>Here you can find every post that other users shared about their already planned travels. Also, you can find your friends by their username using the search bar.</p>
         <div className='search-container'>
           <input type='text' placeholder='Search user...' className='search-input' onChange={e => setBeforeSearch(e.target.value)} onKeyDown={k => k.key === 'Enter' ? handleSearch() : ''} />
           <button className='green-button' onClick={handleSearch}>Search</button>
@@ -126,7 +132,7 @@ const CommunityScreen = () => {
                   <div className='community'>
                     {posts.length > 0 && posts.map((value, index) => {
                       return (
-                        <Post key={index} postId={value._id} travelId={value.travel} user={{ userId, username, profPic }} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} />
+                        <Post key={index} postId={value._id} travelId={value.travel} user={{ userId, username, profPic }} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} handleReload={handleReload} />
                       )
                     })}
                     {users.length > 0 && users.map((u, index) => {

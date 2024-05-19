@@ -154,7 +154,22 @@ export const getTravels = async (req, res) => {
 
 export const getTravelInfo = async (req, res) => {
   try {
-    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees').populate('requests')
+    const travel = await PlannedTravel.findById(req.params.id).populate('destination').populate('organizerId').populate('atendees').populate('requests').populate('itinerary')
+      .populate({
+        path: 'posts',
+        populate: { path: 'user' }
+      })
+      .populate({
+        path: 'posts',
+        populate: { path: 'likes' }
+      })
+      .populate({
+        path: 'posts',
+        populate: {
+          path: 'comments',
+          populate: { path: 'user' }
+        }
+      })
 
     if (!travel) {
       return res.status(404).json({ error: 'Travel not found' })

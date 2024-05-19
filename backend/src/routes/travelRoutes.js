@@ -52,7 +52,7 @@ travelRoutes.route('/dashboard/:id/post')
   .post(isLogged, isParticipant, uploadPost.single('image'), addPost)
 
 travelRoutes.route('/dashboard/:id/post/:postId')
-  .delete(isLogged, isParticipant, deletePost)
+  .delete(isLogged, deletePost)
   .post(isLogged, likePost)
 
 travelRoutes.route('/dashboard/:id/post/:postId/comment')

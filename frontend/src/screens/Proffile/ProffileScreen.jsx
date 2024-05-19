@@ -17,9 +17,14 @@ const ProffileScreen = () => {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [isSmallScreen, setIsSmallScreen] = useState(false)
+  const [shouldReload, setShouldReload] = useState(false)
 
   const navigate = useNavigate()
   const { userId } = useParams()
+
+  const handleReload = () => {
+    setShouldReload(prevState => !prevState)
+  }
 
   const handleMediaQueryChanges = (mediaQuery) => {
     if (mediaQuery.matches) {
@@ -69,7 +74,7 @@ const ProffileScreen = () => {
   <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
     {posts.length
       ? posts.map((value, index) => {
-        return <Post key={index} postId={value._id} travelId={value.travel} user={user} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} />
+        return <Post key={index} postId={value._id} travelId={value.travel} user={user} imageUrl={value.image} description={value.description} postUser={value.user} postLikes={value.likes} postComments={value.comments} handleReload={handleReload} />
       })
 
       : (
@@ -122,7 +127,7 @@ const ProffileScreen = () => {
     return () => {
       mediaQuery.removeEventListener('change', handleMediaQueryChanges)
     }
-  }, [userId, navigate])
+  }, [userId, navigate, shouldReload])
 
   if (loading) {
     return (<Loader />)
