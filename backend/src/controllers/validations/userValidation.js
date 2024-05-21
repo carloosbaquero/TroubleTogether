@@ -4,11 +4,18 @@ import User from '../../models/User.js'
 import countries from '../../utils/countries.js'
 
 export const registerValidation = async (req, res) => {
+  const today = new Date()
+  const minAgeDate = new Date(today.getFullYear() - 16, today.getMonth(), today.getDate())
+  const maxAgeDate = new Date(today.getFullYear() - 130, today.getMonth(), today.getDate())
+
   const schemaRegister = Joi.object({
     username: Joi.string().trim().pattern(/^[a-z0-9_]+$/).min(6).max(20).required().label('Username').messages({ 'string.pattern.base': 'username can only contain lowercase letters, digits and underscores.' }),
     email: Joi.string().trim().min(6).max(100).required().email().label('Email'),
     password: Joi.string().trim().min(8).max(1024).required().label('Password'),
-    birthDate: Joi.date().max('now').required().label('Birth Date'),
+    birthDate: Joi.date().max(minAgeDate).min(maxAgeDate).required().label('Birth Date').messages({
+      'date.max': 'You must be at least 16 years old.',
+      'date.min': 'You must be at most 130 years old.'
+    }),
     city: Joi.string().trim().max(30).required().label('City'),
     country: Joi.string().trim().valid(...countries).required().label('Country')
   })

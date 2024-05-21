@@ -67,11 +67,7 @@ export const initAxiosAuth = () => {
         if (response.data.data.userId === '') {
           const accessToken = await refreshToken(url)
           setAccessToken(accessToken)
-
-          // Marcar la solicitud como ya reintentada para evitar un bucle infinito
           response.config._isRetry = true
-
-          // Reintentar la solicitud original después de actualizar el token
           response.config.headers.Authorization = `Bearer ${accessToken}`
           return api.request(response.config)
         }
@@ -87,15 +83,10 @@ export const initAxiosAuth = () => {
           try {
             const accessToken = await refreshToken(url)
             setAccessToken(accessToken)
-
-            // Marcar la solicitud como ya reintentada para evitar un bucle infinito
             error.config._isRetry = true
-
-            // Reintentar la solicitud original después de actualizar el token
             error.config.headers.Authorization = `Bearer ${accessToken}`
             return api.request(error.config)
           } catch (refreshError) {
-            // Manejar errores de actualización de token aquí
             console.error('Error refreshing token:', refreshError)
             throw refreshError
           }
