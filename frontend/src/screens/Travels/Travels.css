@@ -6,8 +6,8 @@
 }
 
 .travels h1 {
-  word-wrap: break-word; /* Permite que las palabras largas se rompan y se ajusten dentro del contenedor */
-    white-space: normal; /* Asegura que el texto se ajuste al ancho del contenedor */
+  word-wrap: break-word;
+    white-space: normal;
 }
 
 .travel-cards-container {
@@ -44,7 +44,6 @@
     cursor: pointer;
   }
   
-  /* Estilos adicionales para cuando el botón está activo */
   .search-button:hover {
     background-color: #0056b3;
   }

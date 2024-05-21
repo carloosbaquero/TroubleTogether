@@ -77,6 +77,8 @@ const CreateTravel = () => {
         {({ values, isSubmitting, setFieldValue }) => (
           <Form className='create-travel'>
             <h1>Let's start planning your trip</h1>
+            <p>(If your travel's start date is three years from now, it will not appear in the Search for a Travel feed unless you use the correct dates filters.)</p>
+            <br />
             <div>
               <label htmlFor='travelName'>Name:</label>
               <Field type='text' id='travelName' name='name' />

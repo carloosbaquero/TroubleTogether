@@ -3,12 +3,13 @@ import './Comment.css'
 import { useState } from 'react'
 import Modal from 'react-modal'
 import api from '../utils/api'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Comment = ({ user, comment, comments, setComments, travelId, postId }) => {
   const [showModalDelete, setShowModalDelete] = useState(false)
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleDelete = async () => {
     try {
@@ -51,10 +52,10 @@ const Comment = ({ user, comment, comments, setComments, travelId, postId }) => 
       <div className='comment'>
         <div className='post-card-top'>
           <div className='atendee'>
-            <div className='profile-picture-atendee' onClick={() => navigate(`/globetrotters/proffile/${comment.user._id}`)}>
+            <div className='profile-picture-atendee' onClick={() => { if (location.pathname !== `/globetrotters/proffile/${comment.user._id}`)navigate(`/globetrotters/proffile/${comment.user._id}`) }}>
               <img src={comment.user?.profPic ? comment.user.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
             </div>
-            <p className='username-atendee' onClick={() => navigate(`/globetrotters/proffile/${comment.user._id}`)}>{comment.user?.username}</p>
+            <p className='username-atendee' onClick={() => { if (location.pathname !== `/globetrotters/proffile/${comment.user._id}`) navigate(`/globetrotters/proffile/${comment.user._id}`) }}>{comment.user?.username}</p>
           </div>
           {user?.userId?.toString() === comment.user?._id?.toString() &&
             <div className='post-top-icons'>

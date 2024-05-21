@@ -27,8 +27,6 @@
 }
 
 .vertical-green-button {
-  writing-mode: vertical-rl; /* Establece la escritura vertical de derecha a izquierda */
-  text-orientation: mixed; /* Permite que el texto sea vertical */
   white-space: nowrap; /* Evita que el texto se envuelva */
   width: 25px; /* Ancho del botón */
   border: none; /* Elimina el borde */
@@ -39,6 +37,15 @@
   cursor: pointer;
   position: fixed;
   right: 0;
+  writing-mode: tb-rl; /* Alternativa más compatible para navegadores antiguos */
+  text-orientation: upright; /* Asegura que el texto esté orientado correctamente */
+}
+
+@supports (writing-mode: vertical-rl) {
+  .vertical-green-button {
+    writing-mode: vertical-rl; /* Establece la escritura vertical de derecha a izquierda */
+    text-orientation: mixed; /* Permite que el texto sea vertical */
+  }
 }
 
 .vertical-green-button:hover {
@@ -46,16 +53,23 @@
 }
 
 .vertical-red-button {
-  writing-mode: vertical-rl; /* Establece la escritura vertical de derecha a izquierda */
-  text-orientation: mixed; /* Permite que el texto sea vertical */
   white-space: nowrap; /* Evita que el texto se envuelva */
   width: 25px; /* Ancho del botón */
   border: none; /* Elimina el borde */
-  background-color: rgb(214, 53, 53);
+  background-color: rgb(214, 53, 53); /* Color de fondo */
   color: white; /* Color del texto */
   font-size: 14px; /* Tamaño de fuente */
   padding: 5px; /* Relleno */
   cursor: pointer;
+  writing-mode: tb-rl; /* Alternativa más compatible para navegadores antiguos */
+  text-orientation: upright; /* Asegura que el texto esté orientado correctamente */
+}
+
+@supports (writing-mode: vertical-rl) {
+  .vertical-red-button {
+    writing-mode: vertical-rl; /* Establece la escritura vertical de derecha a izquierda */
+    text-orientation: mixed; /* Permite que el texto sea vertical */
+  }
 }
 
 .vertical-red-button:hover {

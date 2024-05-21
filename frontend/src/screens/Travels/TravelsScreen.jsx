@@ -191,8 +191,15 @@ const TravelScreen = () => {
       <Header />
       <div className='travels'>
         <h1>Looking for a destination?</h1>
+        <p>Here you can search for planning travels created by other users.
+          If you can not find your ideal travel, you can always <a href='/globetrotters/create-travel'>Plan it yourself.</a>
+        </p>
+        <p>If you want to find travels that start more than 3 years from now, you should use the 'Dates Filter'</p>
         <div className='search-container'>
-          <input type='text' placeholder='Search...' className='search-input' onChange={e => setSearch(e.target.value)} onKeyDown={k => k.key === 'Enter' ? handleSearch() : ''} />
+          <input
+            type='text' placeholder='Search...' className='search-input'
+            onChange={e => setSearch(e.target.value)} onKeyDown={k => k.key === 'Enter' ? handleSearch() : ''}
+          />
           <button className='green-button' onClick={handleSearch}>Search</button>
         </div>
 
@@ -223,13 +230,19 @@ const TravelScreen = () => {
                 : (
                   <div className={!isSmallScreen ? 'travel-cards-container' : ''}>
                     {travels.length > 0 && travels.map((travel, index) => {
-                      return <TravelCard key={index} id={travel._id} name={travel.name} startDate={travel.startDate} endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees} maxAtendees={travel.maxAtendees} profPic={travel.organizerId.profPic ? travel.organizerId.profPic : '/default-profile-pic.jpg'} />
+                      return (
+                        <TravelCard
+                          key={index} id={travel._id} name={travel.name} startDate={travel.startDate}
+                          endDate={travel.endDate} destinations={travel.destination} atendees={travel.atendees}
+                          maxAtendees={travel.maxAtendees}
+                          profPic={travel.organizerId.profPic ? travel.organizerId.profPic : '/default-profile-pic.jpg'}
+                        />
+                      )
                     })}
 
                   </div>)}
             </>
             )}
-
         <Paginator page={page} setPage={setPage} total={total} />
       </div>
     </>

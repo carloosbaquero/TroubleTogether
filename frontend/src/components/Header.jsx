@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { IoClose, IoMenu, IoHomeOutline } from 'react-icons/io5'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './Header.css'
 import api from '../utils/api'
 import { deleteAccessToken, deleteRefreshToken, getAccessToken, getRefreshToken } from '../utils/authHelpers'
@@ -10,10 +10,11 @@ import { GrPlan } from 'react-icons/gr'
 
 const Header = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const [isNavVisible, setIsNavVisible] = useState(false)
   const [userId, setUserId] = useState('')
   const [profPic, setProfPic] = useState('/default-profile-pic.jpg')
-  const [isSmallScreen, setIsSmallScreen] = useState(false)
+  const [isSmallScreen, setIsSmallScreen] = useState(true)
 
   const handleLogout = async () => {
     try {
@@ -68,12 +69,36 @@ const Header = () => {
       <img src='/final-logo.svg' className='logo' alt='logo' />
       {(isNavVisible || !isSmallScreen) &&
         <nav className='nav-header'>
-          <div className='nav-button' onClick={() => navigate('/globetrotters')}><span><IoHomeOutline /> Home</span></div>
-          <div className='nav-button' onClick={() => navigate('/globetrotters/travels')}><span><MdOutlineTravelExplore /> Search for a travel</span></div>
-          <div className='nav-button' onClick={() => navigate('/globetrotters/community')}><span><ImUsers /> Community</span></div>
-          <div className='nav-button' onClick={() => navigate('/globetrotters/create-travel')}><span><GrPlan /> Plan your next travel</span></div>
+          <div
+            className='nav-button' onClick={() => {
+              if (location.pathname !== '/globetrotters') navigate('/globetrotters')
+            }}
+          ><span><IoHomeOutline /> Home</span>
+          </div>
+          <div
+            className='nav-button' onClick={() => {
+              if (location.pathname !== '/globetrotters/travels')navigate('/globetrotters/travels')
+            }}
+          ><span><MdOutlineTravelExplore /> Search for a travel</span>
+          </div>
+          <div
+            className='nav-button' onClick={() => {
+              if (location.pathname !== '/globetrotters/community')navigate('/globetrotters/community')
+            }}
+          ><span><ImUsers /> Community</span>
+          </div>
+          <div
+            className='nav-button' onClick={() => {
+              if (location.pathname !== '/globetrotters/create-travel')navigate('/globetrotters/create-travel')
+            }}
+          ><span><GrPlan /> Plan your next travel</span>
+          </div>
           {userId &&
-            <div className='nav-button' onClick={() => navigate('/globetrotters/my-proffile')}>
+            <div
+              className='nav-button' onClick={() => {
+                if (location.pathname !== '/globetrotters/my-proffile')navigate('/globetrotters/my-proffile')
+              }}
+            >
               <div className='profile-picture-header'>
                 <img src={profPic || '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
               </div>

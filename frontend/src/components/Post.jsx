@@ -7,7 +7,7 @@ import api from '../utils/api'
 import Modal from 'react-modal'
 import { MdDelete } from 'react-icons/md'
 import Comment from './Comment'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, handleReload, postUser, postLikes, postComments }) => {
   const [selectedFile, setSelectedFile] = useState(null)
@@ -23,6 +23,7 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
   })
 
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -134,7 +135,7 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
           <br />
           <div className='modal-buttons'>
             <button className='red-button' onClick={() => setShowNotLogged(false)}>Don`t Log In</button>
-            <button className='green-button' onClick={() => navigate('/globetrotters/sign')}>Go Log In</button>
+            <button className='green-button' onClick={() => { if (location.pathname !== '/globetrotters/sign')navigate('/globetrotters/sign') }}>Go Log In</button>
           </div>
         </div>
       </Modal>
@@ -209,10 +210,10 @@ const Post = ({ travelId, postId, user, imageUrl, description, add, setAddMode, 
         {!add &&
           <div className='post-card-top'>
             <div className='atendee'>
-              <div className='profile-picture-atendee' onClick={() => navigate(`/globetrotters/proffile/${postUser?._id}`)}>
+              <div className='profile-picture-atendee' onClick={() => { if (location.pathname !== `/globetrotters/proffile/${postUser?._id}`)navigate(`/globetrotters/proffile/${postUser?._id}`) }}>
                 <img src={postUser?.profPic ? postUser.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
               </div>
-              <p className='username-atendee' onClick={() => navigate(`/globetrotters/proffile/${postUser?._id}`)}>{postUser?.username}</p>
+              <p className='username-atendee' onClick={() => { if (location.pathname !== `/globetrotters/proffile/${postUser?._id}`)navigate(`/globetrotters/proffile/${postUser?._id}`) }}>{postUser?.username}</p>
             </div>
             {user?.userId?.toString() === postUser?._id?.toString() &&
               <div className='post-top-icons'>
