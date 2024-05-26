@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import User from '../models/user.js'
+import User from '../models/User.js'
 import PlannedTravel from '../models/plannedTravel.js'
 import Destination from '../models/destination.js'
 import Request from '../models/request.js'
