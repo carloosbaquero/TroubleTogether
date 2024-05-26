@@ -7,7 +7,7 @@ const UserCard = ({ user }) => {
   return (
     <div className='user' onClick={() => navigate(`/globetrotters/proffile/${user._id}`)}>
       <div className='user-profPic'>
-        <img src={user?.profPic ? user.profPic : '/default-profile-pic.jpg'} alt='Profile' className='user-profPic' />
+        <img src={user?.profPic ? user.profPic : '/default-profile-pic.jpg'} alt='Profile' className='profile-picture__image' />
       </div>
       <h2>{user.username}</h2>
       <br />

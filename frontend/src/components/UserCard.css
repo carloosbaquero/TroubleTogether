@@ -16,9 +16,13 @@
 }
 
 .user-profPic {
-    width: 150px; /* ajusta el tamaño según tus necesidades */
-    height: 150px; /* ajusta el tamaño según tus necesidades */
-    border-radius: 50%;
+
+        width: 150px; /* ajusta el tamaño según tus necesidades */
+        height: 150px; /* ajusta el tamaño según tus necesidades */
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+      
   }
 
 
