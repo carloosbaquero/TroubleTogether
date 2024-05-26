@@ -157,7 +157,7 @@ export const whoAmI = async (req, res) => {
     username = await User.findById(req.user._id)
   }
 
-  res.status(200).json({ error: null, data: { userId, username: username.username || '', profPic: username.profPic || '' } })
+  res.status(200).json({ error: null, data: { userId, username: username?.username || '', profPic: username?.profPic || '' } })
 }
 
 export const myProffile = async (req, res) => {
