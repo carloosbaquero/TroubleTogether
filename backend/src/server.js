@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url'
 
 const app = express()
 app.use(express.json())
-app.use(cors([config.HOST_DIR]))
+app.use(cors([`${config.HOST_DIR}`]))
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
