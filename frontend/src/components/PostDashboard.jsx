@@ -4,7 +4,7 @@ import { IoIosAddCircle } from 'react-icons/io'
 import PropTypes from 'prop-types'
 import Post from './Post'
 
-const PostDashboard = ({ posts, travelId, handleReload, username, profPic, userId }) => {
+const PostDashboard = ({ posts, travelId, handleReload, username, profPic, userId, dash }) => {
   const [addMode, setAddMode] = useState(false)
   const [addError, setAddError] = useState('')
   const [input, setInput] = useState({
@@ -36,9 +36,10 @@ const PostDashboard = ({ posts, travelId, handleReload, username, profPic, userI
 
   return (
     <>
-      <h2>Posts <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /> </h2>
+      <h2>Posts {dash && <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' />} </h2>
       <br />
-      {posts.length === 0 && !addMode && <h5>You can share new posts about your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
+      {posts.length === 0 && !addMode && dash && <h5>You can share new posts about your travel by clicking this button: <IoIosAddCircle onClick={() => setAddMode(true)} className='add-icon' /></h5>}
+      {posts.length === 0 && !addMode && !dash && <h5>There are no posts in this travel yet.</h5>}
       <div className='destinations'>
         {addMode &&
           <Post handleReload={handleReload} travelId={travelId} user={{ username, profPic }} add setAddMode={setAddMode} />}
@@ -55,7 +56,11 @@ const PostDashboard = ({ posts, travelId, handleReload, username, profPic, userI
 PostDashboard.propTypes = {
   handleReload: PropTypes.func,
   travelId: PropTypes.string.isRequired,
-  posts: PropTypes.array.isRequired
+  posts: PropTypes.array.isRequired,
+  username: PropTypes.string.isRequired,
+  profPic: PropTypes.string.isRequired,
+  userId: PropTypes.string.isRequired,
+  dash: PropTypes.bool
 }
 
 export default PostDashboard

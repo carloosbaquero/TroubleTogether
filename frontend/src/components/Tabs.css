@@ -27,7 +27,7 @@
 
 @media (max-width: 500px) {
   .tab-content {
-    padding: 20px;
+    padding: 0px;
     min-height: 500px;
   }
 }

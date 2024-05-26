@@ -169,7 +169,7 @@ const TravelDashboard = () => {
     { title: 'Suggestions', content: <SuggestionDashboard handleReload={handleReload} participant={{ userId, username }} travelInfo={travelInfo} planned={travelInfo.state === 'Planned'} /> },
     travelInfo.state === 'Planning'
       ? { title: 'Requests', content: <RequestsDashboard travelInfo={travelInfo} /> }
-      : { title: 'Posts', content: <PostDashboard handleReload={handleReload} posts={travelInfo.posts} travelId={travelInfo._id} username={username} profPic={profPic} userId={userId} /> }
+      : { title: 'Posts', content: <PostDashboard handleReload={handleReload} posts={travelInfo.posts} travelId={travelInfo._id} username={username} profPic={profPic} userId={userId} dash /> }
   ]
   return (
     <>
