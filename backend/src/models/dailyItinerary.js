@@ -12,13 +12,7 @@ const DailyItinerarySchema = new Schema({
     max: 1500,
     min: 2,
     required: true
-  },
-  approvations: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'ApprovationItinerary'
-    }
-  ]
+  }
 })
 
 export default mongoose.model('DailyItinerary', DailyItinerarySchema)

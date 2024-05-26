@@ -26,3 +26,14 @@ yarn-error.log*
 
 backend/src/public/profPic/image-*
 backend/src/public/posts/image-*
+!backend/src/public/profPic/image-000.jpg
+!backend/src/public/profPic/image-001.jpg
+!backend/src/public/profPic/image-002.jpg
+!backend/src/public/profPic/image-003.jpg
+
+!backend/src/public/posts/image-000.jpg
+!backend/src/public/posts/image-001.jpg
+!backend/src/public/posts/image-002.jpg
+!backend/src/public/posts/image-003.jpg
+!backend/src/public/posts/image-004.jpg
+!backend/src/public/posts/image-005.jpg

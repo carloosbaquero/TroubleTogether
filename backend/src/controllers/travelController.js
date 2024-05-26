@@ -95,7 +95,9 @@ export const getTravels = async (req, res) => {
     const destinations = await Destination.find({
       $or: [
         { city: { $regex: searchNoAccents, $options: 'i' } },
-        { city: { $regex: search, $options: 'i' } }
+        { city: { $regex: search, $options: 'i' } },
+        { country: { $regex: searchNoAccents, $options: 'i' } },
+        { country: { $regex: search, $options: 'i' } }
       ]
     })
       .where('country')

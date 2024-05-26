@@ -59,3 +59,9 @@
       margin-top: 100px;
     }
   }
+
+  @media (max-width: 500px) {
+    .destinations {
+      padding: 0px;
+    }
+  }

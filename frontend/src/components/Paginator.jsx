@@ -4,11 +4,10 @@ import PropTypes from 'prop-types'
 
 const Paginator = ({ page, setPage, total }) => {
   const handleNext = () => {
-    if (total - page * 10 > 10) {
+    if (total - page * 10 > 0) {
       setPage(page + 1)
     }
   }
-
   const handleBefore = () => {
     if (page > 1) {
       setPage(page - 1)
@@ -19,7 +18,7 @@ const Paginator = ({ page, setPage, total }) => {
     <div className='paginator'>
       {page > 1 && <HiArrowCircleLeft className='paginator-element' onClick={handleBefore} />}
       <p>Page {page}</p>
-      {total - page * 10 > 10 && <HiArrowCircleRight className='paginator-element' onClick={handleNext} />}
+      {total - page * 10 > 0 && <HiArrowCircleRight className='paginator-element' onClick={handleNext} />}
     </div>
   )
 }

@@ -32,7 +32,7 @@ const CommunityScreen = () => {
       try {
         setLoading(true)
         if (search) {
-          const { data } = await api.get(`users/community?search=${search}`)
+          const { data } = await api.get(`users/community?search=${search.trim()}`)
           if (data.error === null) {
             setPosts(data.data.posts)
             setUsers(data.data.users)
