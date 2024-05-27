@@ -113,6 +113,7 @@ export const getTravels = async (req, res) => {
         { description: { $regex: search, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
+      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
@@ -129,6 +130,7 @@ export const getTravels = async (req, res) => {
         { description: { $regex: search, $options: 'i' } },
         { destination: { $in: listDestinations } }
       ],
+      destination: { $in: listDestinations },
       state: 'Planning',
       startDate: { $gte: start },
       endDate: { $lte: end },
