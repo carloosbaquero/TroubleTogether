@@ -96,6 +96,9 @@ const TravelScreen = () => {
     setQueryCountries('')
     setQueryDates('')
     setQuerySearch('')
+    setSelectedCountries([])
+    setStartDate(today)
+    setEndDate(nextWeek)
   }
 
   useEffect(() => {
